@@ -12,36 +12,46 @@
 </div>
 
 <div class="grid grid-2">
-  {{-- ASET --}}
-  <div class="card">
-    <div class="card-header">
-      <h3>Aset</h3>
-      <span class="money font-bold" style="color:var(--brand-600);">Rp {{ number_format($totalAssets, 0, ',', '.') }}</span>
+  <div style="display:flex;flex-direction:column;gap:20px;height:100%;">
+    {{-- ASET --}}
+    <div class="card" style="flex:1;display:flex;flex-direction:column;">
+      <div class="card-header">
+        <h3>Aset</h3>
+        <span class="money font-bold" style="color:var(--brand-600);">Rp {{ number_format($totalAssets, 0, ',', '.') }}</span>
+      </div>
+      <div class="table-wrapper" style="border:none;flex:1;">
+        <table>
+          <thead><tr><th>Kode</th><th>Nama Akun</th><th>Saldo</th></tr></thead>
+          <tbody>
+            @foreach($assets->sortBy('code') as $acc)
+            <tr>
+              <td style="font-family:monospace;font-size:12px;color:var(--brand-600);">{{ $acc->code }}</td>
+              <td>{{ $acc->name }}</td>
+              <td class="money font-bold">Rp {{ number_format($acc->getBalance(), 0, ',', '.') }}</td>
+            </tr>
+            @endforeach
+          </tbody>
+        </table>
+      </div>
     </div>
-    <div class="table-wrapper" style="border:none;">
-      <table>
-        <thead><tr><th>Kode</th><th>Nama Akun</th><th>Saldo</th></tr></thead>
-        <tbody>
-          @foreach($assets->sortBy('code') as $acc)
-          <tr>
-            <td style="font-family:monospace;font-size:12px;color:var(--brand-600);">{{ $acc->code }}</td>
-            <td>{{ $acc->name }}</td>
-            <td class="money font-bold">Rp {{ number_format($acc->getBalance(), 0, ',', '.') }}</td>
-          </tr>
-          @endforeach
-        </tbody>
-        <tfoot>
-          <tr style="background:var(--brand-50);">
-            <td colspan="2" class="font-bold">Total Aset</td>
-            <td class="money font-bold" style="color:var(--brand-700);">Rp {{ number_format($totalAssets, 0, ',', '.') }}</td>
-          </tr>
-        </tfoot>
-      </table>
+
+    {{-- TOTAL ASET CARD --}}
+    <div class="card" style="background:linear-gradient(135deg,var(--brand-50),var(--brand-100));border-color:var(--brand-200);margin-top:auto;">
+      <div class="card-body">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:15px;font-weight:700;color:var(--gray-700);">Total Aset</span>
+          <span class="money" style="font-size:1.25rem;font-weight:900;color:var(--brand-700);">
+            Rp {{ number_format($totalAssets, 0, ',', '.') }}
+          </span>
+        </div>
+        <div style="font-size:11px;color:transparent;user-select:none;margin-top:8px;">.</div> {{-- Spacer to match right card height --}}
+      </div>
     </div>
   </div>
 
   {{-- KEWAJIBAN + EKUITAS --}}
-  <div style="display:flex;flex-direction:column;gap:20px;">
+  <div style="display:flex;flex-direction:column;gap:20px;height:100%;">
+    <div style="flex:1;display:flex;flex-direction:column;gap:20px;">
     <div class="card">
       <div class="card-header">
         <h3>Kewajiban</h3>
@@ -87,8 +97,9 @@
         </table>
       </div>
     </div>
+    </div>
 
-    <div class="card" style="background:linear-gradient(135deg,var(--brand-50),var(--brand-100));border-color:var(--brand-200);">
+    <div class="card" style="background:linear-gradient(135deg,var(--brand-50),var(--brand-100));border-color:var(--brand-200);margin-top:auto;">
       <div class="card-body">
         <div style="display:flex;justify-content:space-between;align-items:center;">
           <span style="font-size:15px;font-weight:700;color:var(--gray-700);">Total Kewajiban + Ekuitas</span>

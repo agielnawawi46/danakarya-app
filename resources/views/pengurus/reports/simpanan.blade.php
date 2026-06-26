@@ -60,16 +60,33 @@
         <tr><td colspan="7" class="text-center text-muted" style="padding:40px;">Belum ada data anggota</td></tr>
         @endforelse
       </tbody>
-      <tfoot>
-        <tr style="background:var(--brand-50);font-weight:700;">
-          <td colspan="3" class="font-bold">TOTAL KESELURUHAN</td>
-          <td class="money text-right">Rp {{ number_format($totals['pokok'],0,',','.') }}</td>
-          <td class="money text-right">Rp {{ number_format($totals['wajib'],0,',','.') }}</td>
-          <td class="money text-right">Rp {{ number_format($totals['sukarela'],0,',','.') }}</td>
-          <td class="money text-right" style="color:var(--brand-700);">Rp {{ number_format($totals['grand'],0,',','.') }}</td>
-        </tr>
-      </tfoot>
     </table>
+  </div>
+</div>
+
+<div class="card" style="background:var(--gray-50);margin-top:20px;">
+  <div class="card-body">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:15px;font-weight:700;color:var(--gray-700);">Total Keseluruhan</span>
+      <div style="display:flex;gap:24px;text-align:right;">
+        <div>
+          <div style="font-size:11px;color:var(--gray-500);text-transform:uppercase;font-weight:700;">Pokok</div>
+          <div class="money font-bold" style="color:var(--gray-900);">Rp {{ number_format($totals['pokok'],0,',','.') }}</div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--gray-500);text-transform:uppercase;font-weight:700;">Wajib</div>
+          <div class="money font-bold" style="color:var(--gray-900);">Rp {{ number_format($totals['wajib'],0,',','.') }}</div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--gray-500);text-transform:uppercase;font-weight:700;">Sukarela</div>
+          <div class="money font-bold" style="color:var(--gray-900);">Rp {{ number_format($totals['sukarela'],0,',','.') }}</div>
+        </div>
+        <div style="border-left:2px solid var(--gray-200);padding-left:24px;">
+          <div style="font-size:11px;color:var(--brand-600);text-transform:uppercase;font-weight:800;">Grand Total</div>
+          <div class="money" style="font-size:1.25rem;font-weight:900;color:var(--brand-700);">Rp {{ number_format($totals['grand'],0,',','.') }}</div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 @endsection

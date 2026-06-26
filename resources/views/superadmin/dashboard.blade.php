@@ -29,7 +29,12 @@
 
 <div class="card">
     <div class="card-header">
-      <h3>🏢 Koperasi Terbaru</h3>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="stat-card-icon indigo" style="width: 36px; height: 36px; border-radius: 10px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        </div>
+        <h3 style="margin: 0;">Koperasi Terbaru</h3>
+      </div>
       <a href="{{ route('superadmin.tenants.index') }}" class="btn btn-secondary btn-sm">Kelola Semua</a>
     </div>
     <div class="table-wrapper" style="border:none;border-radius:0;">

@@ -127,29 +127,7 @@
         </div>
     </section>
 
-    {{-- ================= STATS BAND (Animated Counter) ================= --}}
-    <section x-data="{ visible: false, a: 0, b: 0, c: 0, d: 0 }"
-             x-intersect.threshold.05="visible = true; if(visible) { let i = setInterval(() => { if(a<500) a+=25; if(b<24) b+=1; if(c<985) c+=49; if(d<247) d+=12; if(a>=500 && b>=24 && c>=985 && d>=247) clearInterval(i); }, 30) }"
-             class="relative -mt-24 z-20 max-w-6xl mx-auto px-6">
-        <div class="bg-white rounded-[3rem] shadow-xl border border-slate-100 grid grid-cols-2 md:grid-cols-4 divide-x divide-slate-100 overflow-hidden">
-            <div class="p-8 text-center group hover:bg-slate-50 transition-colors">
-                <p class="text-3xl md:text-4xl font-black text-slate-900" x-text="a + '+'" x-init="a = 0">0</p>
-                <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-2">Anggota Aktif</p>
-            </div>
-            <div class="p-8 text-center group hover:bg-slate-50 transition-colors">
-                <p class="text-3xl md:text-4xl font-black text-slate-900"><span x-text="b.toLocaleString()"></span>M+</p>
-                <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-2">Total Aset Kelola</p>
-            </div>
-            <div class="p-8 text-center group hover:bg-slate-50 transition-colors">
-                <p class="text-3xl md:text-4xl font-black text-slate-900"><span x-text="(c/10).toFixed(1)"></span>%</p>
-                <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-2">Kepuasan Anggota</p>
-            </div>
-            <div class="p-8 text-center group hover:bg-slate-50 transition-colors">
-                <p class="text-3xl md:text-4xl font-black text-slate-900" x-text="d + '/10'"></p>
-                <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-2">Layanan Support</p>
-            </div>
-        </div>
-    </section>
+
 
     {{-- ================= FITUR ================= --}}
     <section id="fitur" class="py-32 md:py-40 px-6">

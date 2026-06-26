@@ -22,7 +22,13 @@
 
 <div class="grid" style="align-items:start;">
   <div class="card">
-    <div class="card-header"><h3>🏢 Profil Koperasi</h3></div>
+    <div class="card-header">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="stat-card-icon indigo" style="width: 36px; height: 36px; border-radius: 10px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"></path><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path><path d="M9 21v-4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4"></path><path d="M9 7h6"></path><path d="M9 11h6"></path></svg>
+        </div>
+        <h3 style="margin: 0;">Profil Koperasi</h3>
+      </div></div>
     <div class="card-body">
       @foreach([
         ['Nama Resmi', $tenant->legal_name ?? $tenant->name],

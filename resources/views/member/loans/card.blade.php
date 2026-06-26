@@ -31,7 +31,14 @@
 </div>
 
 <div class="card">
-  <div class="card-header"><h3>Jadwal Angsuran Lengkap</h3></div>
+  <div class="card-header">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <div class="stat-card-icon blue" style="width: 36px; height: 36px; border-radius: 10px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+      </div>
+      <h3 style="margin: 0;">Jadwal Angsuran Lengkap</h3>
+    </div>
+  </div>
   <div class="table-wrapper" style="border:none;border-radius:0;">
     <table>
       <thead>

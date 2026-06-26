@@ -13,7 +13,13 @@
 
 <div class="grid grid-2" style="align-items:start;max-width:900px;">
   <div class="card">
-    <div class="card-header"><h3>💵 Form Penarikan</h3></div>
+    <div class="card-header">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="stat-card-icon green" style="width: 36px; height: 36px; border-radius: 10px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2" ry="2"></rect><circle cx="12" cy="12" r="2"></circle><path d="M6 12h.01M18 12h.01"></path></svg>
+        </div>
+        <h3 style="margin: 0;">Form Penarikan</h3>
+      </div></div>
     <div class="card-body">
       <div style="background:var(--brand-50);border:1px solid var(--brand-200);border-radius:8px;padding:14px;margin-bottom:20px;">
         <div style="font-size:12px;color:var(--brand-700);font-weight:600;text-transform:uppercase;letter-spacing:.06em;">Saldo Simpanan Sukarela</div>
@@ -54,7 +60,13 @@
   </div>
 
   <div class="card">
-    <div class="card-header"><h3>ℹ️ Ketentuan Penarikan</h3></div>
+    <div class="card-header">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="stat-card-icon blue" style="width: 36px; height: 36px; border-radius: 10px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        </div>
+        <h3 style="margin: 0;">Ketentuan Penarikan</h3>
+      </div></div>
     <div class="card-body">
       <ul style="list-style:none;display:flex;flex-direction:column;gap:12px;">
         @foreach([

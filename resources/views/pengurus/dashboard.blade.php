@@ -48,7 +48,13 @@
 
 <div class="grid grid-2">
   <div class="card">
-    <div class="card-header"><h3>⏳ Antrian Pinjaman</h3>
+    <div class="card-header">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="stat-card-icon amber" style="width: 36px; height: 36px; border-radius: 10px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        </div>
+        <h3 style="margin: 0;">Antrian Pinjaman</h3>
+      </div>
       <a href="{{ route('pengurus.loans.index') }}" class="btn btn-secondary btn-sm">Semua</a>
     </div>
     <div class="table-wrapper" style="border:none;border-radius:0;">
@@ -80,7 +86,14 @@
   </div>
 
   <div class="card">
-    <div class="card-header"><h3>⚠️ Angsuran Jatuh Tempo</h3></div>
+    <div class="card-header">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="stat-card-icon red" style="width: 36px; height: 36px; border-radius: 10px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path></svg>
+        </div>
+        <h3 style="margin: 0;">Angsuran Jatuh Tempo</h3>
+      </div>
+    </div>
     <div class="table-wrapper" style="border:none;border-radius:0;">
       <table>
         <thead><tr><th>Anggota</th><th>Angsuran ke-</th><th>Jatuh Tempo</th><th>Total</th></tr></thead>

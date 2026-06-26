@@ -11,7 +11,7 @@
   <a href="{{ route('pengurus.accounting.journals') }}" class="btn btn-secondary">← Kembali</a>
 </div>
 
-<div class="card" style="max-width:800px;" x-data="{
+<div class="card" x-data="{
   lines: [{account_code:'',debit:0,credit:0,description:''},{account_code:'',debit:0,credit:0,description:''}],
   addLine() { this.lines.push({account_code:'',debit:0,credit:0,description:''}); },
   removeLine(i) { if(this.lines.length > 2) this.lines.splice(i,1); },
@@ -20,7 +20,13 @@
   isBalanced()  { return Math.abs(this.totalDebit()-this.totalCredit()) < 0.01; },
   fmt(v) { return 'Rp '+Math.round(v).toLocaleString('id-ID'); }
 }">
-  <div class="card-header"><h3>📝 Form Jurnal</h3></div>
+  <div class="card-header">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="stat-card-icon blue" style="width: 36px; height: 36px; border-radius: 10px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+        </div>
+        <h3 style="margin: 0;">Form Jurnal</h3>
+      </div></div>
   <div class="card-body">
     @if($errors->any())
       <div class="alert alert-danger">{{ $errors->first() }}</div>

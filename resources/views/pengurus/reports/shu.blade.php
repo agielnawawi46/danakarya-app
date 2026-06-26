@@ -22,30 +22,41 @@
 </div>
 
 {{-- Calculation Form --}}
-<div class="card" style="margin-bottom:20px;max-width:600px;">
-  <div class="card-header"><h3>🧮 Hitung SHU Tahun {{ $year }}</h3></div>
-  <div class="card-body">
+<div class="card" style="margin-bottom:20px;">
+  <div class="card-header">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="stat-card-icon blue" style="width: 36px; height: 36px; border-radius: 10px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="16" y1="14" x2="16" y2="14"></line><line x1="16" y1="18" x2="16" y2="18"></line><line x1="12" y1="14" x2="12" y2="14"></line><line x1="12" y1="18" x2="12" y2="18"></line><line x1="8" y1="14" x2="8" y2="14"></line><line x1="8" y1="18" x2="8" y2="18"></line></svg>
+        </div>
+        <h3 style="margin: 0;">Hitung SHU Tahun {{ $year }}</h3>
+      </div></div>
+  <div class="card-body" style="padding:32px;">
     <form method="POST" action="{{ route('pengurus.reports.shu.calculate') }}">
       @csrf
       <input type="hidden" name="year" value="{{ $year }}">
       @if($errors->any())
         <div class="alert alert-danger">{{ $errors->first() }}</div>
       @endif
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Total Pendapatan (Rp) <span class="req">*</span></label>
-          <input type="number" name="total_income" class="form-control" placeholder="Ambil dari Laporan L/R" min="0" step="1000" required>
-          <div class="form-hint">Lihat di Laporan Laba/Rugi → Total Pendapatan</div>
+      
+      <div style="display:flex;gap:24px;margin-bottom:32px;">
+        <div style="flex:1;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:16px;padding:32px;text-align:center;box-shadow:inset 0 2px 4px rgba(0,0,0,0.02);">
+          <div style="font-size:15px;color:var(--gray-500);font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:12px;">Total Pendapatan</div>
+          <div class="money" style="font-size:2.5rem;font-weight:900;color:var(--success);">Rp {{ number_format($totalIncome, 0, ',', '.') }}</div>
+          <input type="hidden" name="total_income" value="{{ $totalIncome }}">
         </div>
-        <div class="form-group">
-          <label class="form-label">Total Beban (Rp) <span class="req">*</span></label>
-          <input type="number" name="total_expense" class="form-control" placeholder="Ambil dari Laporan L/R" min="0" step="1000" required>
+        <div style="flex:1;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:16px;padding:32px;text-align:center;box-shadow:inset 0 2px 4px rgba(0,0,0,0.02);">
+          <div style="font-size:15px;color:var(--gray-500);font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:12px;">Total Beban</div>
+          <div class="money" style="font-size:2.5rem;font-weight:900;color:var(--danger);">Rp {{ number_format($totalExpense, 0, ',', '.') }}</div>
+          <input type="hidden" name="total_expense" value="{{ $totalExpense }}">
         </div>
       </div>
-      <button type="submit" class="btn btn-primary">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-        Hitung SHU
-      </button>
+
+      <div style="text-align:center;">
+        <button type="submit" class="btn btn-primary" style="padding:14px 40px;font-size:16px;border-radius:12px;box-shadow:0 4px 12px rgba(99,102,241,0.3);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          Hitung & Proses SHU Tahun {{ $year }}
+        </button>
+      </div>
     </form>
   </div>
 </div>
@@ -54,7 +65,12 @@
 @forelse($distributions as $dist)
 <div class="card" style="margin-bottom:20px;">
   <div class="card-header">
-    <h3>📊 SHU Tahun {{ $dist->year }}</h3>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="stat-card-icon indigo" style="width: 36px; height: 36px; border-radius: 10px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+        </div>
+        <h3 style="margin: 0;">SHU Tahun {{ $dist->year }}</h3>
+      </div>
     <div class="flex gap-2 items-center">
       @if($dist->status === 'draft')
         <span class="badge badge-warning">Draft</span>
@@ -111,7 +127,6 @@
 </div>
 @empty
 <div class="empty-state">
-  <span class="empty-state-icon">📊</span>
   <div class="empty-state-text">Belum ada kalkulasi SHU untuk tahun {{ $year }}</div>
   <p class="text-muted" style="margin-top:8px;font-size:13px;">Gunakan form di atas untuk menghitung SHU berdasarkan laporan Laba/Rugi</p>
 </div>

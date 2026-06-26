@@ -72,8 +72,12 @@
   {{-- Recent Loans --}}
   <div class="card">
     <div class="card-header">
-      <h3>Pinjaman Terbaru</h3>
-      <a href="{{ route('pengurus.loans.index') }}" class="btn btn-secondary btn-sm" style="font-size:12px;">Lihat Semua</a>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="stat-card-icon blue" style="width: 36px; height: 36px; border-radius: 10px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line></svg>
+        </div>
+        <h3 style="margin: 0;">Pinjaman Terbaru</h3>
+      </div>
     </div>
     <div class="table-wrapper" style="border-radius:0;border:none;">
       <table>
@@ -105,8 +109,12 @@
   {{-- Recent Deposits --}}
   <div class="card">
     <div class="card-header">
-      <h3>Transaksi Terbaru</h3>
-      <a href="{{ route('pengurus.deposits.index') }}" class="btn btn-secondary btn-sm" style="font-size:12px;">Lihat Semua</a>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="stat-card-icon green" style="width: 36px; height: 36px; border-radius: 10px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+        </div>
+        <h3 style="margin: 0;">Transaksi Terbaru</h3>
+      </div>
     </div>
     <div class="table-wrapper" style="border-radius:0;border:none;">
       <table>

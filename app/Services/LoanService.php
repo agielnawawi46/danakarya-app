@@ -68,14 +68,24 @@ class LoanService
 
     private function generateFlatSchedule(Loan $loan, \Carbon\Carbon $startDate): void
     {
-        $monthlyPrincipal = $loan->amount / $loan->tenor_months;
-        $monthlyInterest  = $loan->amount * ($loan->interest_rate / 100);
-        $monthlyTotal     = $monthlyPrincipal + $monthlyInterest;
-        $remaining        = $loan->amount;
+        $monthlyPrincipal = round($loan->amount / $loan->tenor_months);
+        $monthlyInterest  = round($loan->amount * ($loan->interest_rate / 100));
+        
+        $remainingPrincipal = $loan->amount;
 
         for ($i = 1; $i <= $loan->tenor_months; $i++) {
-            $dueDate   = $startDate->copy()->addMonths($i - 1);
-            $remaining -= $monthlyPrincipal;
+            $dueDate = $startDate->copy()->addMonths($i - 1);
+            
+            $principal = $monthlyPrincipal;
+            $interest  = $monthlyInterest;
+            
+            // Adjust the last installment to ensure the total principal matches exactly
+            if ($i === $loan->tenor_months) {
+                $principal = $remainingPrincipal;
+            }
+            
+            $total = $principal + $interest;
+            $remainingPrincipal -= $principal;
 
             LoanSchedule::create([
                 'loan_id'           => $loan->id,
@@ -83,10 +93,10 @@ class LoanService
                 'user_id'           => $loan->user_id,
                 'installment_number'=> $i,
                 'due_date'          => $dueDate->toDateString(),
-                'principal_amount'  => round($monthlyPrincipal, 2),
-                'interest_amount'   => round($monthlyInterest, 2),
-                'total_amount'      => round($monthlyTotal, 2),
-                'remaining_balance' => round(max(0, $remaining), 2),
+                'principal_amount'  => $principal,
+                'interest_amount'   => $interest,
+                'total_amount'      => $total,
+                'remaining_balance' => max(0, $remainingPrincipal),
                 'status'            => 'pending',
             ]);
         }
@@ -103,10 +113,19 @@ class LoanService
         $balance = $p;
 
         for ($i = 1; $i <= $n; $i++) {
-            $interest  = $balance * $r;
-            $principal = $annuity - $interest;
-            $balance  -= $principal;
-            $dueDate   = $startDate->copy()->addMonths($i - 1);
+            $interest  = round($balance * $r);
+            
+            if ($i === $n) {
+                // Last installment: principal is exactly the remaining balance
+                $principal = round($balance);
+                $total     = $principal + $interest;
+            } else {
+                $total     = round($annuity);
+                $principal = $total - $interest;
+            }
+            
+            $balance -= $principal;
+            $dueDate  = $startDate->copy()->addMonths($i - 1);
 
             LoanSchedule::create([
                 'loan_id'           => $loan->id,
@@ -114,10 +133,10 @@ class LoanService
                 'user_id'           => $loan->user_id,
                 'installment_number'=> $i,
                 'due_date'          => $dueDate->toDateString(),
-                'principal_amount'  => round($principal, 2),
-                'interest_amount'   => round($interest, 2),
-                'total_amount'      => round($annuity, 2),
-                'remaining_balance' => round(max(0, $balance), 2),
+                'principal_amount'  => $principal,
+                'interest_amount'   => $interest,
+                'total_amount'      => $total,
+                'remaining_balance' => max(0, $balance),
                 'status'            => 'pending',
             ]);
         }

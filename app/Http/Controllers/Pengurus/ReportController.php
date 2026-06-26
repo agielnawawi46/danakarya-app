@@ -120,7 +120,30 @@ class ReportController extends Controller
     {
         $year          = (int) ($request->year ?? now()->year);
         $distributions = ShuDistribution::where('year', $year)->get();
-        return view('pengurus.reports.shu', compact('distributions', 'year'));
+
+        $incomeAccounts  = Account::where('type', 'income')->get();
+        $expenseAccounts = Account::where('type', 'expense')->get();
+
+        $totalIncome  = 0;
+        $totalExpense = 0;
+
+        foreach ($incomeAccounts as $acc) {
+            $balance = JournalEntryLine::withoutGlobalScopes()
+                ->whereHas('journalEntry', fn($q) => $q->where('organization_id', Auth::user()->organization_id)->whereYear('date', $year))
+                ->where('account_id', $acc->id)
+                ->sum('credit');
+            $totalIncome += $balance;
+        }
+
+        foreach ($expenseAccounts as $acc) {
+            $balance = JournalEntryLine::withoutGlobalScopes()
+                ->whereHas('journalEntry', fn($q) => $q->where('organization_id', Auth::user()->organization_id)->whereYear('date', $year))
+                ->where('account_id', $acc->id)
+                ->sum('debit');
+            $totalExpense += $balance;
+        }
+
+        return view('pengurus.reports.shu', compact('distributions', 'year', 'totalIncome', 'totalExpense'));
     }
 
     public function calculateShu(Request $request): RedirectResponse

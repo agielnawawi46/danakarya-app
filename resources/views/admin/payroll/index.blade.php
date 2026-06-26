@@ -20,10 +20,6 @@
   </select>
   <input type="number" name="year" class="form-control" style="max-width:100px;" value="{{ $year }}" min="2020" max="2030">
   <button class="btn btn-secondary">Lihat Periode</button>
-  <a href="{{ route('admin.payroll.export', ['month'=>$month,'year'=>$year]) }}" class="btn btn-primary">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-    Export CSV untuk Finance
-  </a>
 </form>
 
 {{-- Summary --}}
@@ -54,25 +50,54 @@
 {{-- Import Form --}}
 <div class="card" style="margin-bottom:20px;">
   <div class="card-header">
-    <h3>📥 Import Konfirmasi Payroll dari Finance</h3>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="stat-card-icon blue" style="width: 36px; height: 36px; border-radius: 10px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8 17 12 21 16 17"></polyline><line x1="12" y1="12" x2="12" y2="21"></line><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"></path></svg>
+        </div>
+        <h3 style="margin: 0;">Import Konfirmasi Payroll dari Finance</h3>
+      </div>
     <span class="badge badge-info">CSV</span>
   </div>
   <div class="card-body">
-    <form method="POST" action="{{ route('admin.payroll.import') }}" enctype="multipart/form-data" class="flex items-center gap-2">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px dashed var(--gray-200);">
+      <div>
+        <div style="font-weight: 600; font-size: 14px;">1. Export Data Tagihan</div>
+        <div class="form-hint" style="margin-top: 4px;">Download file CSV tagihan bulan ini untuk dikirim ke tim Finance.</div>
+      </div>
+      <a href="{{ route('admin.payroll.export', ['month'=>$month,'year'=>$year]) }}" class="btn btn-primary" style="width: 190px; justify-content: center;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Export CSV
+      </a>
+    </div>
+
+    <form method="POST" action="{{ route('admin.payroll.import') }}" enctype="multipart/form-data" style="display:flex; justify-content:space-between; align-items:center;">
       @csrf
       <input type="hidden" name="month" value="{{ $month }}">
       <input type="hidden" name="year"  value="{{ $year }}">
-      <input type="file" name="file" class="form-control" accept=".csv,.txt" style="max-width:360px;" required>
-      <button type="submit" class="btn btn-primary">Upload & Proses</button>
+      
+      <div>
+        <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px;">2. Import Hasil Konfirmasi (Upload CSV)</div>
+        <div class="form-hint" style="margin-bottom: 8px;">Upload file CSV hasil konfirmasi Finance. Kolom: employee_id, email, simpanan_wajib, angsuran</div>
+        <input type="file" name="file" class="form-control" accept=".csv,.txt" style="max-width:360px;" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 190px; justify-content: center;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 0-4-4H5a2 2 0 0 0-4 4v2"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+        Upload & Proses
+      </button>
     </form>
-    <div class="form-hint" style="margin-top:8px;">Upload file CSV hasil konfirmasi Finance. Kolom: employee_id, email, simpanan_wajib, angsuran</div>
   </div>
 </div>
 
 {{-- Billing Table --}}
 <div class="card">
   <div class="card-header">
-    <h3>📋 Tagihan Periode {{ $months[$month] }} {{ $year }}</h3>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="stat-card-icon blue" style="width: 36px; height: 36px; border-radius: 10px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+        </div>
+        <h3 style="margin: 0;">Tagihan Periode {{ $months[$month] }} {{ $year }}</h3>
+      </div>
     <span class="badge badge-secondary">{{ count($billing) }} karyawan</span>
   </div>
   <div class="table-wrapper" style="border:none;">
@@ -107,17 +132,25 @@
         </tr>
         @endforelse
       </tbody>
-      @if(count($billing))
-      <tfoot>
-        <tr style="background:var(--brand-50);font-weight:700;">
-          <td colspan="3" class="font-bold">TOTAL</td>
-          <td class="money">Rp {{ number_format($totalSimpananWajib,0,',','.') }}</td>
-          <td class="money">Rp {{ number_format($totalAngsuran,0,',','.') }}</td>
-          <td class="money" style="color:var(--brand-600);">Rp {{ number_format($totalPotongan,0,',','.') }}</td>
-        </tr>
-      </tfoot>
-      @endif
     </table>
   </div>
 </div>
+
+@if(count($billing))
+<div class="card" style="background:var(--brand-50);border:1px solid var(--brand-100);margin-top:16px;">
+  <div class="card-body">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:15px;font-weight:700;color:var(--brand-800);">Grand Total Potongan Payroll</span>
+      <div style="text-align:right;">
+        <div class="money" style="font-size:1.5rem;font-weight:900;color:var(--brand-700);">
+          Rp {{ number_format($totalPotongan,0,',','.') }}
+        </div>
+        <div style="font-size:12px;color:var(--brand-600);margin-top:4px;">
+          (Simpanan: Rp {{ number_format($totalSimpananWajib,0,',','.') }} + Angsuran: Rp {{ number_format($totalAngsuran,0,',','.') }})
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+@endif
 @endsection

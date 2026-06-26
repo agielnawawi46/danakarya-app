@@ -39,7 +39,12 @@
 {{-- Transaction History --}}
 <div class="card">
   <div class="card-header">
-    <h3>📋 Riwayat Transaksi</h3>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="stat-card-icon blue" style="width: 36px; height: 36px; border-radius: 10px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+        </div>
+        <h3 style="margin: 0;">Riwayat Transaksi</h3>
+      </div>
     <span class="badge badge-secondary">{{ $transactions->total() }} transaksi</span>
   </div>
   <div class="table-wrapper" style="border:none;">

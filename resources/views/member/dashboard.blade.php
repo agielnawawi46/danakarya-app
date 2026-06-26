@@ -49,7 +49,14 @@
 <div class="grid grid-2">
   {{-- Active Loan --}}
   <div class="card">
-    <div class="card-header"><h3>🏦 Pinjaman Aktif</h3></div>
+    <div class="card-header">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="stat-card-icon blue" style="width: 36px; height: 36px; border-radius: 10px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>
+        </div>
+        <h3 style="margin: 0;">Pinjaman Aktif</h3>
+      </div>
+    </div>
     <div class="card-body">
       @if($activeLoan)
         <div style="display:grid;gap:12px;">
@@ -86,7 +93,13 @@
 
   {{-- Recent Transactions --}}
   <div class="card">
-    <div class="card-header"><h3>📋 Riwayat Transaksi</h3>
+    <div class="card-header">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="stat-card-icon green" style="width: 36px; height: 36px; border-radius: 10px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+        </div>
+        <h3 style="margin: 0;">Riwayat Transaksi</h3>
+      </div>
       <a href="{{ route('member.deposits.index') }}" class="btn btn-secondary btn-sm">Semua</a>
     </div>
     <div class="table-wrapper" style="border:none;border-radius:0;">

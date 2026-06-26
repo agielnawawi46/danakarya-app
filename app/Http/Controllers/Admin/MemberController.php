@@ -38,7 +38,12 @@ class MemberController extends Controller
         $members = $query->with('roles')->paginate(20);
         $roles   = ['admin', 'pengurus', 'pengawas', 'anggota'];
 
-        return view('admin.members.index', compact('members', 'roles'));
+        $allMembersForAutocomplete = User::withoutGlobalScopes()
+            ->where('organization_id', $orgId)
+            ->whereHas('roles', fn($q) => $q->where('name', '!=', 'superadmin'))
+            ->get(['name', 'email', 'employee_id']);
+
+        return view('admin.members.index', compact('members', 'roles', 'allMembersForAutocomplete'));
     }
 
     public function create(): View
@@ -110,7 +115,14 @@ class MemberController extends Controller
             'salary'      => ['nullable', 'numeric', 'min:0'],
             'phone'       => ['nullable', 'string', 'max:20'],
             'status'      => ['required', 'in:active,inactive,suspended'],
+            'password'    => ['nullable', 'string', 'min:8'],
         ]);
+
+        if (!empty($validated['password'])) {
+            $validated['password'] = bcrypt($validated['password']);
+        } else {
+            unset($validated['password']);
+        }
 
         $user->update($validated);
 

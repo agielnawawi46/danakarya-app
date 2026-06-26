@@ -20,11 +20,14 @@ class LoanController extends Controller
         $query = Loan::with('user');
         if ($request->filled('status')) $query->byStatus($request->status);
         if ($request->filled('search')) {
-            $query->whereHas('user', fn($q) => $q->where('name', 'like', '%' . $request->search . '%'));
+            // Note: Since search is now a user_id from the dropdown, we must match it
+            $query->where('user_id', $request->search);
         }
 
         $loans = $query->latest()->paginate(20);
-        return view('pengurus.loans.index', compact('loans'));
+        
+        $members = \App\Models\User::whereHas('roles', fn($q) => $q->where('name', 'anggota'))->get();
+        return view('pengurus.loans.index', compact('loans', 'members'));
     }
 
     public function show(Loan $loan): View

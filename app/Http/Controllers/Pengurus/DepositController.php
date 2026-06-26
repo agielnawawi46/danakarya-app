@@ -32,7 +32,13 @@ class DepositController extends Controller
         }
 
         $deposits = $query->latest()->paginate(20);
-        return view('pengurus.deposits.index', compact('deposits'));
+        
+        $members = User::withoutGlobalScopes()
+            ->where('organization_id', Auth::user()->organization_id)
+            ->whereHas('roles', fn($q) => $q->where('name', 'anggota'))
+            ->get();
+
+        return view('pengurus.deposits.index', compact('deposits', 'members'));
     }
 
     public function create(): View

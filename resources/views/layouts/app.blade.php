@@ -22,7 +22,9 @@
   <!-- ═══ SIDEBAR ═══════════════════════════════════════════════════════ -->
   <aside class="sidebar">
     <div class="sidebar-brand">
-      <div class="sidebar-brand-icon">DK</div>
+      <div class="sidebar-brand-icon" style="background:transparent; box-shadow:none;">
+        <img src="{{ asset('images/logo.jpg') }}" alt="Logo" style="width:100%; height:100%; object-fit:contain; border-radius:20px;">
+      </div>
       <div class="sidebar-brand-text">
         <span class="sidebar-brand-name">Dana Karya</span>
         <span class="sidebar-brand-sub">
@@ -85,8 +87,9 @@
       </div>
     </header>
 
-    <!-- Flash Messages -->
-    <div class="page-content" style="padding-bottom:0; margin-bottom:-16px;">
+    <!-- Page Content -->
+    <main class="page-content">
+      <!-- Flash Messages -->
       @if(session('success'))
         <div class="alert alert-success auto-dismiss">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -131,10 +134,7 @@
           </div>
         @endif
       @endauth
-    </div>
 
-    <!-- Page Content -->
-    <main class="page-content">
       @yield('content')
     </main>
 

@@ -3,9 +3,7 @@
 @section('title', 'Daftar Koperasi Baru — Dana Karya')
 
 @section('auth_content')
-<div class="auth-logo">DK</div>
 <h2 class="auth-title">Daftar Koperasi Baru</h2>
-<p class="auth-subtitle">Buat akun Admin untuk koperasi Anda</p>
 
 @if($errors->any())
   <div class="alert alert-danger">
@@ -40,10 +38,6 @@
     <label class="form-label" for="password_confirmation">Konfirmasi Password <span class="req">*</span></label>
     <input type="password" id="password_confirmation" name="password_confirmation"
       class="form-control" placeholder="Ulangi password" required>
-  </div>
-
-  <div style="background:var(--brand-50);border:1px solid var(--brand-200);border-radius:8px;padding:12px 14px;margin-bottom:20px;font-size:12px;color:var(--brand-700);">
-    ℹ️ Setelah registrasi, Anda perlu melengkapi profil koperasi dan aturan keuangan.
   </div>
 
   <button type="submit" class="btn btn-primary btn-block btn-lg">
