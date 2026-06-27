@@ -83,7 +83,9 @@
       </form>
       @else
       <div class="empty-state">
-        <span class="empty-state-icon">🔒</span>
+        <div class="empty-state-icon" style="background:#fef2f2;color:#ef4444;width:64px;height:64px;display:flex;align-items:center;justify-content:center;border-radius:50%;margin:0 auto 16px;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        </div>
         <div class="empty-state-text">Pinjaman aktif masih berjalan</div>
       </div>
       @endif
@@ -142,7 +144,9 @@
 
       <template x-if="!result && !loading">
         <div class="empty-state">
-          <span class="empty-state-icon">🧮</span>
+          <div class="empty-state-icon" style="background:#eff6ff;color:#3b82f6;width:64px;height:64px;display:flex;align-items:center;justify-content:center;border-radius:50%;margin:0 auto 16px;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          </div>
           <div class="empty-state-text">Masukkan jumlah & tenor untuk simulasi otomatis</div>
         </div>
       </template>

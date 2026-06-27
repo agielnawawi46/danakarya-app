@@ -73,17 +73,51 @@
             <span class="font-bold">{{ $activeLoan->schedules->where('status','paid')->count() }} / {{ $activeLoan->tenor_months }} bulan</span>
           </div>
           @if($nextInstallment)
-          <div style="background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1px solid #f59e0b;border-radius:8px;padding:14px;">
-            <div style="font-size:12px;color:#92400e;font-weight:600;">Angsuran Berikutnya</div>
-            <div class="money" style="font-size:1.25rem;font-weight:900;color:#78350f;">Rp {{ number_format($nextInstallment->total_amount, 0, ',', '.') }}</div>
-            <div style="font-size:12px;color:#92400e;margin-top:2px;">Jatuh tempo: {{ $nextInstallment->due_date->format('d F Y') }}</div>
+          <div style="background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1px solid #f59e0b;border-radius:8px;padding:14px;display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <div style="font-size:12px;color:#92400e;font-weight:600;">Angsuran Berikutnya</div>
+              <div class="money" style="font-size:1.25rem;font-weight:900;color:#78350f;">Rp {{ number_format($nextInstallment->total_amount, 0, ',', '.') }}</div>
+              <div style="font-size:12px;color:#92400e;margin-top:2px;">Jatuh tempo: {{ $nextInstallment->due_date->format('d F Y') }}</div>
+            </div>
+            
+            {{-- Grafik Progress Pembayaran --}}
+            @php
+              $paidCount = $activeLoan->schedules->where('status','paid')->count();
+              $totalCount = $activeLoan->tenor_months;
+              $progressRatio = $totalCount > 0 ? ($paidCount / $totalCount) * 100 : 0;
+              $progressRadius = 24;
+              $progressCircum = 2 * pi() * $progressRadius;
+              $progressOffset = $progressCircum - ($progressRatio / 100) * $progressCircum;
+            @endphp
+            <style>
+              @keyframes drawProgressDashboard {
+                from { stroke-dashoffset: {{ $progressCircum }}; }
+                to { stroke-dashoffset: {{ $progressOffset }}; }
+              }
+            </style>
+            <div style="position:relative;width:56px;height:56px;flex-shrink:0;">
+              <svg width="56" height="56" style="transform:rotate(-90deg);position:absolute;top:0;left:0;">
+                <circle cx="28" cy="28" r="{{ $progressRadius }}" fill="none" stroke="rgba(217, 119, 6, 0.2)" stroke-width="6" />
+                <circle cx="28" cy="28" r="{{ $progressRadius }}" fill="none" stroke="#d97706" stroke-width="6" 
+                        stroke-dasharray="{{ $progressCircum }}" 
+                        stroke-dashoffset="{{ $progressOffset }}"
+                        stroke-linecap="round"
+                        style="animation: drawProgressDashboard 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;" />
+              </svg>
+              <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                <span style="font-size:14px;font-weight:900;color:#b45309;line-height:1;">{{ $paidCount }}</span>
+                <span style="font-size:8px;font-weight:700;color:#d97706;text-transform:uppercase;">/ {{ $totalCount }}</span>
+              </div>
+            </div>
           </div>
           @endif
           <a href="{{ route('member.loans.card', $activeLoan) }}" class="btn btn-secondary btn-block">Lihat Kartu Piutang →</a>
         </div>
       @else
         <div class="empty-state">
-          <span class="empty-state-icon">💳</span>
+          <div class="empty-state-icon" style="background:var(--brand-50);color:var(--brand-600);width:64px;height:64px;display:flex;align-items:center;justify-content:center;border-radius:50%;margin:0 auto 16px;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+          </div>
           <div class="empty-state-text">Tidak ada pinjaman aktif</div>
           <a href="{{ route('member.loans.apply') }}" class="btn btn-primary" style="margin-top:16px;">Ajukan Pinjaman</a>
         </div>

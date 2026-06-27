@@ -16,21 +16,19 @@
 {{-- Balance Cards --}}
 <div class="grid grid-3" style="margin-bottom:24px;">
   @foreach([
-    ['Simpanan Pokok','pokok','indigo','💎','Dibayar sekali saat bergabung'],
-    ['Simpanan Wajib','wajib','blue','📅','Potongan gaji bulanan'],
-    ['Simpanan Sukarela','sukarela','green','💵','Dapat ditarik kapan saja'],
+    ['Simpanan Pokok','pokok','indigo','<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle></svg>','Dibayar sekali saat bergabung'],
+    ['Simpanan Wajib','wajib','blue','<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect></svg>','Potongan gaji bulanan'],
+    ['Simpanan Sukarela','sukarela','green','<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>','Dapat ditarik kapan saja'],
   ] as [$label, $type, $color, $icon, $desc])
-  <div class="stat-card" style="flex-direction:column;gap:8px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;width:100%;">
-      <span style="font-size:22px;">{{ $icon }}</span>
-      <span class="badge badge-secondary text-sm">{{ ucfirst($type) }}</span>
-    </div>
-    <div>
-      <div style="font-size:12px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.06em;">{{ $label }}</div>
-      <div class="money" style="font-size:1.4rem;font-weight:900;color:var(--gray-900);margin-top:4px;">
-        Rp {{ number_format($balances[$type], 0, ',', '.') }}
+  <div class="stat-card" style="display:flex;align-items:flex-start;gap:16px;">
+    <div class="stat-card-icon {{ $color }}">{!! $icon !!}</div>
+    <div class="stat-card-info" style="flex:1;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;width:100%;">
+        <div class="stat-card-label" style="font-size:13px;margin-bottom:4px;">{{ $label }}</div>
+        <span class="badge badge-secondary" style="font-size:10px;">{{ ucfirst($type) }}</span>
       </div>
-      <div style="font-size:12px;color:var(--gray-400);margin-top:2px;">{{ $desc }}</div>
+      <div class="stat-card-value money" style="font-size:1.4rem;">Rp {{ number_format($balances[$type], 0, ',', '.') }}</div>
+      <div class="stat-card-change" style="font-size:11px;margin-top:6px;font-weight:600;">{{ $desc }}</div>
     </div>
   </div>
   @endforeach

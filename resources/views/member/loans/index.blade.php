@@ -54,7 +54,9 @@
 </div>
 @empty
 <div class="empty-state">
-  <span class="empty-state-icon">💳</span>
+  <div class="empty-state-icon" style="background:var(--brand-50);color:var(--brand-600);width:64px;height:64px;display:flex;align-items:center;justify-content:center;border-radius:50%;margin:0 auto 16px;">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+  </div>
   <div class="empty-state-text">Belum ada riwayat pinjaman</div>
   <a href="{{ route('member.loans.apply') }}" class="btn btn-primary" style="margin-top:16px;">Ajukan Pinjaman Pertama</a>
 </div>

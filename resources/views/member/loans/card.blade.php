@@ -65,16 +65,24 @@
         </tr>
         @endforeach
       </tbody>
-      <tfoot>
-        <tr style="background:var(--brand-50);">
-          <td colspan="2" class="font-bold">TOTAL</td>
-          <td class="money font-bold">Rp {{ number_format($loan->schedules->sum('principal_amount'), 0, ',', '.') }}</td>
-          <td class="money font-bold text-warning">Rp {{ number_format($loan->schedules->sum('interest_amount'), 0, ',', '.') }}</td>
-          <td class="money font-bold">Rp {{ number_format($loan->schedules->sum('total_amount'), 0, ',', '.') }}</td>
-          <td colspan="2"></td>
-        </tr>
-      </tfoot>
     </table>
+  </div>
+  <div class="card-footer" style="background:var(--brand-50);display:flex;justify-content:space-between;align-items:center;padding:24px;">
+    <div style="font-weight:900; color: var(--brand-700); text-transform: uppercase; letter-spacing: 1px; font-size: 14px;">Total Keseluruhan</div>
+    <div style="display:flex;gap:32px;text-align:right;">
+      <div>
+        <div style="font-size:11px;color:var(--gray-500);font-weight:700;text-transform:uppercase;">Total Pokok</div>
+        <div class="money" style="font-size:16px;font-weight:800;color:var(--gray-900);margin-top:2px;">Rp {{ number_format($loan->schedules->sum('principal_amount'), 0, ',', '.') }}</div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--gray-500);font-weight:700;text-transform:uppercase;">Total Bunga</div>
+        <div class="money" style="font-size:16px;font-weight:800;color:var(--warning);margin-top:2px;">Rp {{ number_format($loan->schedules->sum('interest_amount'), 0, ',', '.') }}</div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--brand-600);font-weight:800;text-transform:uppercase;">Grand Total</div>
+        <div class="money" style="font-size:20px;font-weight:900;color:var(--brand-700);margin-top:2px;">Rp {{ number_format($loan->schedules->sum('total_amount'), 0, ',', '.') }}</div>
+      </div>
+    </div>
   </div>
 </div>
 @endsection
