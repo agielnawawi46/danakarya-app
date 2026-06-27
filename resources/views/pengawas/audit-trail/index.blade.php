@@ -3,11 +3,12 @@
 @section('page_title', 'Log Audit Trail')
 
 @section('content')
-<div class="page-header">
+<div class="page-header" style="justify-content: space-between;">
   <div class="page-header-text">
     <h1 class="page-title">Log Audit Trail</h1>
     <p class="page-subtitle">Rekam jejak semua aktivitas kritis pengurus koperasi</p>
   </div>
+  <a href="{{ route('pengawas.audit-trail.export', request()->all()) }}" class="btn btn-primary">Export PDF</a>
 </div>
 
 {{-- Filters --}}

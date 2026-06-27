@@ -5,7 +5,10 @@
 @section('content')
 <div class="page-header">
   <h1 class="page-title">Buku Besar</h1>
-  <a href="{{ route('pengawas.audit-finance.index') }}" class="btn btn-secondary">← Kembali</a>
+  <div class="flex gap-2">
+    <a href="{{ route('pengawas.audit-finance.ledger.export') }}" class="btn btn-primary">Export PDF</a>
+    <a href="{{ route('pengawas.audit-finance.index') }}" class="btn btn-secondary">← Kembali</a>
+  </div>
 </div>
 
 @php

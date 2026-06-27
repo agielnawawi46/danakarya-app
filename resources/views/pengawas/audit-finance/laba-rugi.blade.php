@@ -17,6 +17,7 @@
       </select>
       <button class="btn btn-secondary">Tampilkan</button>
     </form>
+    <a href="{{ route('pengawas.audit-finance.laba-rugi.export', request()->all()) }}" class="btn btn-primary">Export PDF</a>
     <a href="{{ route('pengawas.audit-finance.index') }}" class="btn btn-secondary">← Kembali</a>
   </div>
 </div>

@@ -140,10 +140,20 @@ Route::prefix('pengawas')
     ->group(function () {
         Route::get('/dashboard',          [PengawasDashboard::class, 'index'])->name('dashboard');
         Route::get('/audit-finance',      [AuditFinanceController::class, 'index'])->name('audit-finance.index');
+        Route::get('/audit-finance/kas', [AuditFinanceController::class, 'kas'])->name('audit-finance.kas');
+        Route::get('/audit-finance/kas/export', [AuditFinanceController::class, 'exportKas'])->name('audit-finance.kas.export');
+        Route::get('/audit-finance/simpanan', [AuditFinanceController::class, 'simpanan'])->name('audit-finance.simpanan');
+        Route::get('/audit-finance/simpanan/export', [AuditFinanceController::class, 'exportSimpanan'])->name('audit-finance.simpanan.export');
+        Route::get('/audit-finance/shu', [AuditFinanceController::class, 'shu'])->name('audit-finance.shu');
+        Route::get('/audit-finance/shu/export', [AuditFinanceController::class, 'exportShu'])->name('audit-finance.shu.export');
         Route::get('/audit-finance/ledger', [AuditFinanceController::class, 'ledger'])->name('audit-finance.ledger');
+        Route::get('/audit-finance/ledger/export', [AuditFinanceController::class, 'exportLedger'])->name('audit-finance.ledger.export');
         Route::get('/audit-finance/neraca', [AuditFinanceController::class, 'neraca'])->name('audit-finance.neraca');
+        Route::get('/audit-finance/neraca/export', [AuditFinanceController::class, 'exportNeraca'])->name('audit-finance.neraca.export');
         Route::get('/audit-finance/laba-rugi', [AuditFinanceController::class, 'labaRugi'])->name('audit-finance.laba-rugi');
+        Route::get('/audit-finance/laba-rugi/export', [AuditFinanceController::class, 'exportLabaRugi'])->name('audit-finance.laba-rugi.export');
         Route::get('/audit-trail',        [AuditTrailController::class, 'index'])->name('audit-trail.index');
+        Route::get('/audit-trail/export', [AuditTrailController::class, 'export'])->name('audit-trail.export');
     });
 
 // ─── MEMBER (ANGGOTA) Routes ─────────────────────────────────────────────────

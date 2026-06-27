@@ -80,11 +80,13 @@
 </div>
 
 <div style="margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-  <a href="{{ route('pengawas.audit-finance.index') }}" class="btn btn-secondary" style="justify-content:center;padding:14px;">
-    📊 Audit Keuangan →
+  <a href="{{ route('pengawas.audit-finance.index') }}" class="btn btn-secondary" style="justify-content:center;padding:14px;display:flex;align-items:center;">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+    Audit Keuangan
   </a>
-  <a href="{{ route('pengawas.audit-trail.index') }}" class="btn btn-secondary" style="justify-content:center;padding:14px;">
-    🔍 Log Audit Trail →
+  <a href="{{ route('pengawas.audit-trail.index') }}" class="btn btn-secondary" style="justify-content:center;padding:14px;display:flex;align-items:center;">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+    Log Audit Trail
   </a>
 </div>
 @endsection
