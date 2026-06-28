@@ -167,7 +167,7 @@ class DemoSeeder extends Seeder
                 ['Admin',      'admin@demo.danakarya.id', 'Demo@123!'],
                 ['Pengurus',   'pengurus@demo.danakarya.id', 'Demo@123!'],
                 ['Pengawas',   'pengawas@demo.danakarya.id', 'Demo@123!'],
-                ['Anggota',    'rina.kusuma@demo.danakarya.id', 'Demo@123!'],
+                ['Anggota',    'rina.kusuma@demo.danakarya.id', 'Rina@123!'],
             ]
         );
     }

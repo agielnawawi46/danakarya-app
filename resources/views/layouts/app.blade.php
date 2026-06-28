@@ -53,13 +53,13 @@
 
     <div class="sidebar-footer">
       @auth
-      <div class="sidebar-user">
+      <a href="{{ route('profile.edit') }}" class="sidebar-user" style="text-decoration: none; display: flex; color: inherit; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1">
         <div class="user-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 2)) }}</div>
         <div class="user-info">
           <div class="user-name">{{ auth()->user()->name }}</div>
           <div class="user-role">{{ auth()->user()->getRoleLabel() }}</div>
         </div>
-      </div>
+      </a>
       <form method="POST" action="{{ route('logout') }}" class="mt-2">
         @csrf
         <button type="submit" class="btn btn-secondary btn-sm btn-block" style="margin-top:8px;">
