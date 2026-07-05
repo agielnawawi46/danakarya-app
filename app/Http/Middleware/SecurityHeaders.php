@@ -28,32 +28,33 @@ class SecurityHeaders
         // Control how much referrer info is included
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
-        // Enforce HTTPS for 1 year (only in production)
-        if (app()->environment('production')) {
-            $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-        }
-
         // Permissions Policy — disable access to sensitive browser features
         $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
-
-        // Content Security Policy — restrict resource origins
-        // Allows: self, inline styles/scripts (needed for Alpine.js, Blade), Google Fonts, CDN icons
-        $csp = implode('; ', [
-            "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval'",   // Alpine.js needs unsafe-eval
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-            "font-src 'self' https://fonts.gstatic.com",
-            "img-src 'self' data: blob:",
-            "connect-src 'self'",
-            "frame-ancestors 'self'",
-            "base-uri 'self'",
-            "form-action 'self'",
-        ]);
-        $response->headers->set('Content-Security-Policy', $csp);
 
         // Remove server identity header if present
         $response->headers->remove('X-Powered-By');
         $response->headers->remove('Server');
+
+        // Production-only headers
+        if (app()->environment('production')) {
+            // HSTS — enforce HTTPS for 1 year
+            $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+
+            // Strict CSP for production
+            $csp = implode('; ', [
+                "default-src 'self'",
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+                "font-src 'self' https://fonts.gstatic.com",
+                "img-src 'self' data: blob:",
+                "connect-src 'self'",
+                "frame-ancestors 'self'",
+                "base-uri 'self'",
+                "form-action 'self'",
+            ]);
+            $response->headers->set('Content-Security-Policy', $csp);
+        }
+        // In local/development: skip CSP so Vite dev server (localhost:5173) can serve assets freely
 
         return $response;
     }
