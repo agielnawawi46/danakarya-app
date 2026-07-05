@@ -33,9 +33,9 @@ class DashboardController extends Controller
 
         $nplRatio = $totalLoans > 0 ? ($overdueAmount / $totalLoans) * 100 : 0;
 
-        // Monthly income trend (last 6 months)
+        // Monthly income trend (last 12 months)
         $months = [];
-        for ($i = 5; $i >= 0; $i--) {
+        for ($i = 11; $i >= 0; $i--) {
             $date = now()->subMonths($i);
             $months[] = [
                 'label'  => $date->format('M Y'),

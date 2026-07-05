@@ -26,8 +26,13 @@ class ReportController extends Controller
 
     public function kas(Request $request): View
     {
-        $from = $request->from ?? now()->startOfMonth()->toDateString();
-        $to   = $request->to   ?? now()->toDateString();
+        $now = now();
+        $month = $request->input('month', $now->month);
+        $year = $request->input('year', $now->year);
+
+        $currentPeriod = \Carbon\Carbon::create($year, $month, 1);
+        $from = $currentPeriod->copy()->startOfMonth()->toDateString();
+        $to   = $currentPeriod->copy()->endOfMonth()->toDateString();
 
         $journals = JournalEntry::with('lines.account', 'creator')
             ->whereBetween('date', [$from, $to])
@@ -37,12 +42,23 @@ class ReportController extends Controller
         $totalDebit  = $journals->sum(fn($j) => $j->lines->sum('debit'));
         $totalCredit = $journals->sum(fn($j) => $j->lines->sum('credit'));
 
-        return view('pengurus.reports.kas', compact('journals', 'from', 'to', 'totalDebit', 'totalCredit'));
+        $prevMonth = $currentPeriod->copy()->subMonth();
+        $nextMonth = $currentPeriod->copy()->addMonth();
+
+        return view('pengurus.reports.kas', compact('journals', 'currentPeriod', 'prevMonth', 'nextMonth', 'totalDebit', 'totalCredit', 'from', 'to'));
     }
 
-    public function neraca(): View
+    public function neraca(Request $request): View
     {
-        $accounts = Account::with('journalLines')->orderBy('code')->get();
+        $year = (int) ($request->year ?? now()->year);
+        $endDate = $year . '-12-31';
+
+        // Eager load journalLines but only those up to the selected year
+        $accounts = Account::with(['journalLines' => function($q) use ($endDate) {
+            $q->whereHas('journalEntry', function($q2) use ($endDate) {
+                $q2->whereDate('date', '<=', $endDate);
+            });
+        }])->orderBy('code')->get();
 
         $assets      = $accounts->where('type', 'asset');
         $liabilities = $accounts->where('type', 'liability');
@@ -54,7 +70,7 @@ class ReportController extends Controller
 
         return view('pengurus.reports.neraca', compact(
             'assets', 'liabilities', 'equities',
-            'totalAssets', 'totalLiabilities', 'totalEquities'
+            'totalAssets', 'totalLiabilities', 'totalEquities', 'year'
         ));
     }
 

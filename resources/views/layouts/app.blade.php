@@ -54,7 +54,11 @@
     <div class="sidebar-footer">
       @auth
       <a href="{{ route('profile.edit') }}" class="sidebar-user" style="text-decoration: none; display: flex; color: inherit; transition: opacity 0.2s;" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1">
-        <div class="user-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 2)) }}</div>
+        @if(auth()->user()->avatar_url)
+          <img src="{{ auth()->user()->avatar_url }}" class="user-avatar" style="object-fit: cover; width: 36px; height: 36px; border-radius: 50%;">
+        @else
+          <div class="user-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 2)) }}</div>
+        @endif
         <div class="user-info">
           <div class="user-name">{{ auth()->user()->name }}</div>
           <div class="user-role">{{ auth()->user()->getRoleLabel() }}</div>
@@ -77,12 +81,29 @@
     <!-- Topbar -->
     <header class="topbar">
       <button id="sidebar-toggle" class="btn btn-secondary btn-sm" style="display:none;">☰</button>
-      <h1 class="topbar-title">@yield('page_title', 'Dashboard')</h1>
+      
+      <div class="topbar-title" style="display: flex; align-items: center; gap: 12px;">
+        @auth
+          @if(auth()->user()->organization && !auth()->user()->isSuperadmin())
+            <h1 style="font-size: 1.2rem; font-weight: 800; margin: 0; letter-spacing: -0.02em;">
+              <span style="font-weight: 500; color: var(--gray-500);">Selamat Datang di, </span> {{ auth()->user()->organization->name }}
+            </h1>
+          @else
+            <h1 style="font-size: 1.2rem; font-weight: 800; margin: 0; letter-spacing: -0.02em;">@yield('page_title', 'Dashboard')</h1>
+          @endif
+        @else
+          <h1 style="font-size: 1.2rem; font-weight: 800; margin: 0; letter-spacing: -0.02em;">@yield('page_title', 'Dashboard')</h1>
+        @endauth
+      </div>
+
       <div class="flex items-center gap-3">
         @auth
         <span class="topbar-badge">
           {{ auth()->user()->getRoleLabel() }}
         </span>
+        @if(auth()->user()->organization && !auth()->user()->isSuperadmin())
+          <img src="{{ auth()->user()->organization->logo_url }}" alt="Logo" style="height: 40px; width: 40px; object-fit: contain; border-radius: 20px; box-shadow: none; background: transparent;">
+        @endif
         @endauth
       </div>
     </header>

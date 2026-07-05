@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Deposit;
 use App\Models\User;
+use App\Services\AccountingService;
 use App\Services\AuditService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -43,7 +44,15 @@ class MemberController extends Controller
             ->whereHas('roles', fn($q) => $q->where('name', '!=', 'superadmin'))
             ->get(['name', 'email', 'employee_id']);
 
-        return view('admin.members.index', compact('members', 'roles', 'allMembersForAutocomplete'));
+        $roleCounts = [];
+        foreach ($roles as $r) {
+            $roleCounts[$r] = User::withoutGlobalScopes()
+                ->where('organization_id', $orgId)
+                ->whereHas('roles', fn($q) => $q->where('name', $r))
+                ->count();
+        }
+
+        return view('admin.members.index', compact('members', 'roles', 'allMembersForAutocomplete', 'roleCounts'));
     }
 
     public function create(): View
@@ -195,6 +204,7 @@ class MemberController extends Controller
                             'status'          => 'pending',
                             'transaction_type'=> 'credit',
                             'notes'           => 'Simpanan Pokok Awal (Import)',
+                            'processed_by'    => Auth::id(),
                         ]);
                     }
 

@@ -27,27 +27,86 @@
         <h3 style="margin: 0;">Ringkasan Profil Koperasi</h3>
       </div></div>
     <div class="card-body">
-      @if($org->logo)
-      <div style="text-align:center;margin-bottom:20px;">
-        <img src="{{ asset('storage/'.$org->logo) }}" alt="Logo" style="height:80px;border-radius:8px;object-fit:contain;">
+      <style>
+        .profile-summary-container {
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
+        }
+        .profile-logo-wrapper {
+          text-align: center;
+        }
+        .profile-logo-wrapper img {
+          height: 80px;
+          border-radius: 8px;
+          object-fit: contain;
+          transition: all 0.3s ease;
+        }
+        .profile-details-wrapper {
+          flex: 1;
+        }
+
+        /* Tampilan saat card full width (form ditutup) */
+        #mainGrid:not(.grid-2) .profile-summary-container {
+          flex-direction: row;
+          align-items: flex-start;
+        }
+        #mainGrid:not(.grid-2) .profile-logo-wrapper {
+          flex: 0 0 240px;
+          padding-right: 24px;
+          border-right: 1px solid var(--gray-100);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        #mainGrid:not(.grid-2) .profile-logo-wrapper img {
+          height: 160px;
+          max-width: 100%;
+        }
+
+        /* Responsif pada layar kecil: paksa tumpuk meskipun form ditutup */
+        @media (max-width: 768px) {
+          #mainGrid:not(.grid-2) .profile-summary-container {
+            flex-direction: column;
+          }
+          #mainGrid:not(.grid-2) .profile-logo-wrapper {
+            flex: auto;
+            border-right: none;
+            padding-right: 0;
+            border-bottom: 1px solid var(--gray-100);
+            padding-bottom: 20px;
+          }
+          #mainGrid:not(.grid-2) .profile-logo-wrapper img {
+            height: 100px;
+          }
+        }
+      </style>
+
+      <div class="profile-summary-container">
+        @if($org->logo)
+        <div class="profile-logo-wrapper">
+          <img src="{{ asset('storage/'.$org->logo) }}" alt="Logo">
+        </div>
+        @endif
+        
+        <div class="profile-details-wrapper">
+          @foreach([
+            ['label'=>'Nama Koperasi','value'=>$org->name],
+            ['label'=>'Nama Badan Hukum','value'=>$org->legal_name ?? '-'],
+            ['label'=>'No. Badan Hukum','value'=>$org->legal_number ?? '-'],
+            ['label'=>'Telepon','value'=>$org->phone ?? '-'],
+            ['label'=>'Email','value'=>$org->email ?? '-'],
+            ['label'=>'Alamat','value'=>$org->address ?? '-'],
+            ['label'=>'Terdaftar Pada','value'=>$org->created_at ? $org->created_at->format('d M Y') : '-'],
+            ['label'=>'Status','value'=>$org->is_active ? 'Aktif' : 'Tidak Aktif'],
+          ] as $item)
+          <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--gray-100);">
+            <span style="font-size:13px;color:var(--gray-500);">{{ $item['label'] }}</span>
+            <span style="font-size:13px;font-weight:700;color:var(--gray-900);text-align:right;max-width:200px;word-break:break-word;">{{ $item['value'] }}</span>
+          </div>
+          @endforeach
+        </div>
       </div>
-      @endif
-      
-      @foreach([
-        ['label'=>'Nama Koperasi','value'=>$org->name],
-        ['label'=>'Nama Badan Hukum','value'=>$org->legal_name ?? '-'],
-        ['label'=>'No. Badan Hukum','value'=>$org->legal_number ?? '-'],
-        ['label'=>'Telepon','value'=>$org->phone ?? '-'],
-        ['label'=>'Email','value'=>$org->email ?? '-'],
-        ['label'=>'Alamat','value'=>$org->address ?? '-'],
-        ['label'=>'Terdaftar Pada','value'=>$org->created_at ? $org->created_at->format('d M Y') : '-'],
-        ['label'=>'Status','value'=>$org->is_active ? 'Aktif' : 'Tidak Aktif'],
-      ] as $item)
-      <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--gray-100);">
-        <span style="font-size:13px;color:var(--gray-500);">{{ $item['label'] }}</span>
-        <span style="font-size:13px;font-weight:700;color:var(--gray-900);text-align:right;max-width:200px;word-break:break-word;">{{ $item['value'] }}</span>
-      </div>
-      @endforeach
     </div>
   </div>
 

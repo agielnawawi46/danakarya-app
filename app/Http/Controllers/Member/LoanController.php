@@ -51,7 +51,8 @@ class LoanController extends Controller
             $validated['amount'],
             $org->loan_interest_rate,
             $validated['tenor'],
-            $salary
+            $salary,
+            $org
         );
 
         if (!$score['eligible']) {
@@ -91,7 +92,7 @@ class LoanController extends Controller
             return response()->json(['error' => 'Input tidak valid.'], 422);
         }
 
-        $score = $this->loanService->calculateCreditScore($amount, $rate, $tenor, $salary);
+        $score = $this->loanService->calculateCreditScore($amount, $rate, $tenor, $salary, $org);
 
         // Generate schedule preview (Flat)
         $monthlyPrincipal = $amount / $tenor;

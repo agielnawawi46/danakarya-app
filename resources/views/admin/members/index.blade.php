@@ -15,6 +15,30 @@
   </div>
 </div>
 
+{{-- Stat Cards --}}
+<div class="grid grid-4" style="margin-bottom: 24px; gap: 16px;">
+  @php
+    $roleConfig = [
+        'admin'    => ['color' => 'indigo', 'icon' => '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>'],
+        'pengurus' => ['color' => 'green',  'icon' => '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>'],
+        'pengawas' => ['color' => 'yellow', 'icon' => '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>'],
+        'anggota'  => ['color' => 'blue',   'icon' => '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>'],
+    ];
+  @endphp
+
+  @foreach($roles as $role)
+  <div class="stat-card">
+    <div class="stat-card-icon {{ $roleConfig[$role]['color'] }}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">{!! $roleConfig[$role]['icon'] !!}</svg>
+    </div>
+    <div class="stat-card-content">
+      <div class="stat-card-title">{{ ucfirst($role) }}</div>
+      <div class="stat-card-value">{{ $roleCounts[$role] }} <span style="font-size: 13px; font-weight: normal; color: var(--gray-500);">orang</span></div>
+    </div>
+  </div>
+  @endforeach
+</div>
+
 {{-- Import Form --}}
 <div class="card" style="margin-bottom:20px;">
   <div class="card-header">

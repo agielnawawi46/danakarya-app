@@ -18,7 +18,7 @@ class LoanService
      * Calculate credit score (installment % of salary)
      * Returns the percentage of salary this loan would consume monthly.
      */
-    public function calculateCreditScore(float $amount, float $interestRate, int $tenor, float $salary): array
+    public function calculateCreditScore(float $amount, float $interestRate, int $tenor, float $salary, \App\Models\Organization $org): array
     {
         if ($salary <= 0) {
             return [
@@ -30,19 +30,21 @@ class LoanService
             ];
         }
 
+        $maxPct = $org->max_loan_salary_pct ?? 30;
+
         $monthlyPrincipal = $amount / $tenor;
         $monthlyInterest  = $amount * ($interestRate / 100);
         $monthlyTotal     = $monthlyPrincipal + $monthlyInterest;
         $score            = ($monthlyTotal / $salary) * 100;
-        $maxAllowed       = $salary * 0.30;
+        $maxAllowed       = $salary * ($maxPct / 100);
 
         return [
             'score'       => round($score, 2),
-            'eligible'    => $score <= 30,
+            'eligible'    => $score <= $maxPct,
             'monthly'     => $monthlyTotal,
             'max_allowed' => $maxAllowed,
-            'reason'      => $score > 30
-                ? "Angsuran bulanan (Rp " . number_format($monthlyTotal, 0, ',', '.') . ") melebihi 30% gaji."
+            'reason'      => $score > $maxPct
+                ? "Angsuran bulanan (Rp " . number_format($monthlyTotal, 0, ',', '.') . ") melebihi {$maxPct}% gaji."
                 : "Layak. Angsuran " . round($score, 1) . "% dari gaji.",
         ];
     }
@@ -68,24 +70,28 @@ class LoanService
 
     private function generateFlatSchedule(Loan $loan, \Carbon\Carbon $startDate): void
     {
-        $monthlyPrincipal = round($loan->amount / $loan->tenor_months);
-        $monthlyInterest  = round($loan->amount * ($loan->interest_rate / 100));
+        // Round down to nearest 1000 to be cash-friendly (dibulatkan ke bawah)
+        $monthlyPrincipal = floor(($loan->amount / $loan->tenor_months) / 1000) * 1000;
+        $monthlyInterest  = floor(($loan->amount * ($loan->interest_rate / 100)) / 1000) * 1000;
         
         $remainingPrincipal = $loan->amount;
+        $remainingInterest  = round($loan->amount * ($loan->interest_rate / 100) * $loan->tenor_months);
 
         for ($i = 1; $i <= $loan->tenor_months; $i++) {
             $dueDate = $startDate->copy()->addMonths($i - 1);
             
-            $principal = $monthlyPrincipal;
-            $interest  = $monthlyInterest;
-            
-            // Adjust the last installment to ensure the total principal matches exactly
             if ($i === $loan->tenor_months) {
+                // Adjust the last installment to ensure the total matches exactly
                 $principal = $remainingPrincipal;
+                $interest  = $remainingInterest;
+            } else {
+                $principal = $monthlyPrincipal;
+                $interest  = $monthlyInterest;
             }
             
             $total = $principal + $interest;
             $remainingPrincipal -= $principal;
+            $remainingInterest  -= $interest;
 
             LoanSchedule::create([
                 'loan_id'           => $loan->id,
@@ -113,14 +119,17 @@ class LoanService
         $balance = $p;
 
         for ($i = 1; $i <= $n; $i++) {
-            $interest  = round($balance * $r);
+            $exactInterest = $balance * $r;
             
             if ($i === $n) {
-                // Last installment: principal is exactly the remaining balance
+                // Last installment: exact remainder
                 $principal = round($balance);
+                $interest  = round($exactInterest);
                 $total     = $principal + $interest;
             } else {
-                $total     = round($annuity);
+                // Round down to nearest 1000 for cash-friendly
+                $total     = floor($annuity / 1000) * 1000;
+                $interest  = floor($exactInterest / 1000) * 1000;
                 $principal = $total - $interest;
             }
             

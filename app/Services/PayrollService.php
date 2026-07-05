@@ -32,6 +32,16 @@ class PayrollService
         $rows = [];
 
         foreach ($members as $member) {
+            // Simpanan Pokok - check if pending
+            $pendingPokok = Deposit::withoutGlobalScopes()
+                ->where('organization_id', $org->id)
+                ->where('user_id', $member->id)
+                ->where('type', 'pokok')
+                ->where('status', 'pending')
+                ->first();
+            
+            $simpananPokok = $pendingPokok ? $pendingPokok->amount : 0;
+
             // Simpanan Wajib — check if already paid for this period
             $simpananWajibPaid = Deposit::withoutGlobalScopes()
                 ->where('organization_id', $org->id)
@@ -60,9 +70,10 @@ class PayrollService
                 'name'         => $member->name,
                 'email'        => $member->email,
                 'department'   => $member->department ?? '-',
+                'simpanan_pokok' => $simpananPokok,
                 'simpanan_wajib' => $simpananWajib,
                 'angsuran'     => $angsuran,
-                'total'        => $simpananWajib + $angsuran,
+                'total'        => $simpananPokok + $simpananWajib + $angsuran,
                 'period'       => $month . '/' . $year,
                 'user_id'      => $member->id,
                 'schedule_id'  => $installment?->id,
@@ -84,13 +95,14 @@ class PayrollService
         ];
 
         $csv  = "Dana Karya - Billing Payroll Periode {$monthNames[$month]} {$year}\n";
-        $csv .= "NIK,Nama Karyawan,Departemen,Simpanan Wajib,Angsuran Pinjaman,Total Potongan,Periode\n";
+        $csv .= "NIK,Nama Karyawan,Departemen,Simpanan Pokok,Simpanan Wajib,Angsuran Pinjaman,Total Potongan,Periode\n";
 
         foreach ($billingData as $row) {
             $csv .= implode(',', [
                 '"' . $row['employee_id'] . '"',
                 '"' . $row['name'] . '"',
                 '"' . $row['department'] . '"',
+                $row['simpanan_pokok'],
                 $row['simpanan_wajib'],
                 $row['angsuran'],
                 $row['total'],
@@ -140,6 +152,27 @@ class PayrollService
                     if (!$member) {
                         $failedCount++;
                         continue;
+                    }
+
+                    // Mark simpanan pokok as paid
+                    if (!empty($row['simpanan_pokok']) && $row['simpanan_pokok'] > 0) {
+                        $pokok = Deposit::withoutGlobalScopes()
+                            ->where('organization_id', $org->id)
+                            ->where('user_id', $member->id)
+                            ->where('type', 'pokok')
+                            ->where('status', 'pending')
+                            ->first();
+                        
+                        if ($pokok) {
+                            $pokok->update([
+                                'amount'       => $row['simpanan_pokok'],
+                                'status'       => 'completed',
+                                'processed_by' => $processedBy,
+                                'notes'        => "Payroll {$month}/{$year}",
+                            ]);
+                            $this->accountingService->journalDeposit($row['simpanan_pokok'], $org->id, $processedBy, $member->name);
+                            $totalAmount += $row['simpanan_pokok'];
+                        }
                     }
 
                     // Mark simpanan wajib as paid

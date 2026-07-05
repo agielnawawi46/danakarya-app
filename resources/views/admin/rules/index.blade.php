@@ -28,9 +28,12 @@
       </div></div>
     <div class="card-body">
       @foreach([
+        ['label'=>'Tanggal Tagihan (Masuk)','value'=>'Tgl '.$org->deposit_date],
+        ['label'=>'Tanggal Payroll (Sync)','value'=>'Tgl '.$org->payroll_date],
         ['label'=>'Simpanan Pokok','value'=>'Rp '.number_format($org->simpanan_pokok,0,',','.')],
         ['label'=>'Simpanan Wajib/Bulan','value'=>'Rp '.number_format($org->simpanan_wajib,0,',','.')],
         ['label'=>'Bunga Pinjaman','value'=>$org->loan_interest_rate.'% / bulan'],
+        ['label'=>'Batas Angsuran dari Gaji','value'=>$org->max_loan_salary_pct.'%'],
         ['label'=>'Tenor Maks','value'=>$org->loan_max_tenor.' bulan'],
         ['label'=>'Plafon Maks','value'=>'Rp '.number_format($org->loan_max_plafon,0,',','.')],
         ['label'=>'Metode Bunga','value'=>ucfirst($org->loan_interest_method)],
@@ -48,7 +51,7 @@
           ['label'=>'Bagian Anggota','key'=>'shu_anggota_pct','color'=>'#10b981'],
           ['label'=>'Pengurus','key'=>'shu_pengurus_pct','color'=>'#f59e0b'],
           ['label'=>'Karyawan','key'=>'shu_karyawan_pct','color'=>'#3b82f6'],
-          ['label'=>'Pendidikan','key'=>'shu_pendidikan_pct','color'=>'#8b5cf6'],
+          ['label'=>'Pendidikan & Sosial','key'=>'shu_pendidikan_pct','color'=>'#8b5cf6'],
         ] as $s)
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
           <div style="width:8px;height:8px;border-radius:50%;background:{{ $s['color'] }};flex-shrink:0;"></div>
@@ -78,33 +81,59 @@
         @error('shu_total')<div class="alert alert-danger">{{ $message }}</div>@enderror
 
         <div id="step1">
-        <div class="form-group">
-          <label class="form-label">Simpanan Pokok (Rp) <span class="req">*</span></label>
-          <input type="number" name="simpanan_pokok" class="form-control" value="{{ old('simpanan_pokok', $org->simpanan_pokok) }}" min="0" step="1000" required>
-          <div class="form-hint">Dibayar sekali saat bergabung koperasi</div>
+        <div class="sidebar-section-label" style="font-size:10px;font-weight:700;color:var(--gray-500);letter-spacing:.12em;text-transform:uppercase;">Jadwal Sinkronisasi</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group">
+            <label class="form-label">Tanggal Masuk Tagihan <span class="req">*</span></label>
+            <input type="number" name="deposit_date" class="form-control" value="{{ old('deposit_date', $org->deposit_date) }}" min="1" max="28" required>
+            <div class="form-hint">Tanggal 1-28 (Simpanan Wajib)</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tanggal Import Payroll <span class="req">*</span></label>
+            <input type="number" name="payroll_date" class="form-control" value="{{ old('payroll_date', $org->payroll_date) }}" min="1" max="28" required>
+            <div class="form-hint">Tanggal 1-28</div>
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Simpanan Wajib / Bulan (Rp) <span class="req">*</span></label>
-          <input type="number" name="simpanan_wajib" class="form-control" value="{{ old('simpanan_wajib', $org->simpanan_wajib) }}" min="0" step="1000" required>
+
+        <div class="sidebar-section-label" style="font-size:10px;font-weight:700;color:var(--gray-500);letter-spacing:.12em;text-transform:uppercase;margin-top:10px;">Simpanan</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group">
+            <label class="form-label">Simpanan Pokok (Rp) <span class="req">*</span></label>
+            <input type="number" name="simpanan_pokok" class="form-control" value="{{ old('simpanan_pokok', $org->simpanan_pokok) }}" min="0" step="1000" required>
+            <div class="form-hint">Dibayar sekali saat bergabung</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Simpanan Wajib / Bulan (Rp) <span class="req">*</span></label>
+            <input type="number" name="simpanan_wajib" class="form-control" value="{{ old('simpanan_wajib', $org->simpanan_wajib) }}" min="0" step="1000" required>
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Bunga Pinjaman (% / bulan) <span class="req">*</span></label>
-          <input type="number" name="loan_interest_rate" class="form-control" value="{{ old('loan_interest_rate', $org->loan_interest_rate) }}" min="0" max="100" step="0.1" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Tenor Maksimum (bulan) <span class="req">*</span></label>
-          <input type="number" name="loan_max_tenor" class="form-control" value="{{ old('loan_max_tenor', $org->loan_max_tenor) }}" min="1" max="360" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Plafon Maksimum (Rp) <span class="req">*</span></label>
-          <input type="number" name="loan_max_plafon" class="form-control" value="{{ old('loan_max_plafon', $org->loan_max_plafon) }}" min="0" step="100000" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Metode Bunga <span class="req">*</span></label>
-          <select name="loan_interest_method" class="form-control">
-            <option value="flat" {{ $org->loan_interest_method === 'flat' ? 'selected' : '' }}>Flat</option>
-            <option value="annuity" {{ $org->loan_interest_method === 'annuity' ? 'selected' : '' }}>Anuitas</option>
-          </select>
+
+        <div class="sidebar-section-label" style="font-size:10px;font-weight:700;color:var(--gray-500);letter-spacing:.12em;text-transform:uppercase;margin-top:10px;">Pinjaman (Kredit)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group">
+            <label class="form-label">Bunga Pinjaman (% / bulan) <span class="req">*</span></label>
+            <input type="number" name="loan_interest_rate" class="form-control" value="{{ old('loan_interest_rate', $org->loan_interest_rate) }}" min="0" max="100" step="0.1" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tenor Maksimum (bulan) <span class="req">*</span></label>
+            <input type="number" name="loan_max_tenor" class="form-control" value="{{ old('loan_max_tenor', $org->loan_max_tenor) }}" min="1" max="360" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Batas Angsuran / Gaji (%) <span class="req">*</span></label>
+            <input type="number" name="max_loan_salary_pct" class="form-control" value="{{ old('max_loan_salary_pct', $org->max_loan_salary_pct) }}" min="1" max="100" required>
+            <div class="form-hint">Contoh: 30</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Plafon Maksimum (Rp) <span class="req">*</span></label>
+            <input type="number" name="loan_max_plafon" class="form-control" value="{{ old('loan_max_plafon', $org->loan_max_plafon) }}" min="0" step="100000" required>
+          </div>
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label class="form-label">Metode Bunga <span class="req">*</span></label>
+            <select name="loan_interest_method" class="form-control">
+              <option value="flat" {{ $org->loan_interest_method === 'flat' ? 'selected' : '' }}>Flat</option>
+              <option value="annuity" {{ $org->loan_interest_method === 'annuity' ? 'selected' : '' }}>Anuitas</option>
+            </select>
+          </div>
         </div>
 
         <button type="button" class="btn btn-primary btn-block" onclick="document.getElementById('step1').style.display='none'; document.getElementById('step2').style.display='block';">Lanjut ke Alokasi SHU &rarr;</button>
@@ -155,4 +184,83 @@ function toggleForm() {
     }
 }
 </script>
+
+{{-- Riwayat Perubahan Aturan Keuangan --}}
+@if($auditLogs->isNotEmpty())
+<div class="card" style="margin-top: 20px;">
+  <div class="card-header">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="stat-card-icon purple" style="width:36px;height:36px;border-radius:10px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <div>
+        <h3 style="margin:0;">Riwayat Perubahan Aturan Keuangan</h3>
+        <p style="margin:0;font-size:12px;color:var(--gray-500);">Audit trail otomatis — setiap perubahan aturan dicatat sistem</p>
+      </div>
+    </div>
+  </div>
+  <div class="card-body" style="padding:0;">
+    <table class="table" style="margin:0;">
+      <thead>
+        <tr>
+          <th>Waktu</th>
+          <th>Diubah Oleh</th>
+          <th>Field yang Berubah</th>
+          <th>Sebelum</th>
+          <th>Sesudah</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach($auditLogs as $log)
+        <tr>
+          <td style="white-space:nowrap;font-size:12px;color:var(--gray-500);">
+            {{ $log->created_at->format('d M Y') }}<br>
+            <span style="font-weight:600;color:var(--gray-700);">{{ $log->created_at->format('H:i') }}</span>
+          </td>
+          <td>
+            <span style="font-weight:600;font-size:13px;">{{ $log->user?->name ?? 'Sistem' }}</span><br>
+            <span style="font-size:11px;color:var(--gray-400);">{{ $log->user?->getRoleNames()->first() }}</span>
+          </td>
+          <td style="font-size:12px;max-width:200px;">
+            @if($log->new_values)
+              @foreach(array_keys($log->new_values) as $field)
+                <span style="display:inline-block;background:var(--brand-50);color:var(--brand-700);border-radius:4px;padding:2px 6px;font-size:11px;font-weight:600;margin:2px 2px 2px 0;">{{ $field }}</span>
+              @endforeach
+            @else
+              <span style="color:var(--gray-400);">—</span>
+            @endif
+          </td>
+          <td style="font-size:12px;color:var(--danger-600);">
+            @if($log->old_values)
+              @foreach($log->old_values as $field => $val)
+                <div style="margin-bottom:2px;"><span style="color:var(--gray-400);font-size:11px;">{{ $field }}:</span> <strong>{{ $val }}</strong></div>
+              @endforeach
+            @else —
+            @endif
+          </td>
+          <td style="font-size:12px;color:var(--success-600);">
+            @if($log->new_values)
+              @foreach($log->new_values as $field => $val)
+                <div style="margin-bottom:2px;"><span style="color:var(--gray-400);font-size:11px;">{{ $field }}:</span> <strong>{{ $val }}</strong></div>
+              @endforeach
+            @else —
+            @endif
+          </td>
+        </tr>
+        @endforeach
+      </tbody>
+    </table>
+  </div>
+</div>
+@else
+<div class="card" style="margin-top:20px;">
+  <div class="card-body" style="text-align:center;padding:32px;color:var(--gray-400);">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:8px;opacity:0.4;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <p style="margin:0;font-size:13px;">Belum ada riwayat perubahan aturan keuangan.</p>
+  </div>
+</div>
+@endif
+
 @endsection

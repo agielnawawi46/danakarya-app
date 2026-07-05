@@ -76,7 +76,7 @@ class LoanSchedule extends Model
             'paid'    => '<span class="badge badge-success">Lunas</span>',
             'pending' => $this->isOverdue()
                 ? '<span class="badge badge-danger">Telat</span>'
-                : '<span class="badge badge-warning">Belum Bayar</span>',
+                : '<span class="badge badge-warning">Menunggu</span>',
             'overdue' => '<span class="badge badge-danger">Telat</span>',
             'partial' => '<span class="badge badge-info">Bayar Sebagian</span>',
             default   => $this->status,

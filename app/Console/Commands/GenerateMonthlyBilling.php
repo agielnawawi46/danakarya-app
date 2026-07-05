@@ -19,10 +19,16 @@ class GenerateMonthlyBilling extends Command
 
         $this->info("📋 Generate billing simpanan wajib untuk periode {$month}/{$year}...");
 
-        $orgs = Organization::where('is_active', true)
+        $orgsQuery = Organization::where('is_active', true)
             ->where('is_configured', true)
-            ->where('simpanan_wajib', '>', 0)
-            ->get();
+            ->where('simpanan_wajib', '>', 0);
+
+        // Jika tidak dipaksa tanggal tertentu (manual run), hanya generate yang jadwalnya hari ini
+        if (!$this->option('month') && !$this->option('year')) {
+            $orgsQuery->where('deposit_date', now()->day);
+        }
+
+        $orgs = $orgsQuery->get();
 
         $totalGenerated = 0;
 

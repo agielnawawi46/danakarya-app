@@ -17,7 +17,16 @@ class LoanController extends Controller
 
     public function index(Request $request): View
     {
-        $query = Loan::with('user');
+        $now = now();
+        $month = $request->input('month', $now->month);
+        $year = $request->input('year', $now->year);
+
+        $currentPeriod = \Carbon\Carbon::create($year, $month, 1);
+
+        $query = Loan::with('user')
+            ->whereYear('created_at', $currentPeriod->year)
+            ->whereMonth('created_at', $currentPeriod->month);
+
         if ($request->filled('status')) $query->byStatus($request->status);
         if ($request->filled('search')) {
             // Note: Since search is now a user_id from the dropdown, we must match it
@@ -26,8 +35,11 @@ class LoanController extends Controller
 
         $loans = $query->latest()->paginate(20);
         
+        $prevMonth = $currentPeriod->copy()->subMonth();
+        $nextMonth = $currentPeriod->copy()->addMonth();
+        
         $members = \App\Models\User::whereHas('roles', fn($q) => $q->where('name', 'anggota'))->get();
-        return view('pengurus.loans.index', compact('loans', 'members'));
+        return view('pengurus.loans.index', compact('loans', 'members', 'currentPeriod', 'prevMonth', 'nextMonth'));
     }
 
     public function show(Loan $loan): View
@@ -39,7 +51,8 @@ class LoanController extends Controller
             $loan->amount,
             $loan->interest_rate,
             $loan->tenor_months,
-            $member->getSalaryDecrypted()
+            $member->getSalaryDecrypted(),
+            $loan->organization
         );
 
         return view('pengurus.loans.show', compact('loan', 'member', 'creditInfo'));
@@ -54,11 +67,22 @@ class LoanController extends Controller
         // Final credit score check
         $member = $loan->user;
         $score  = $this->loanService->calculateCreditScore(
-            $loan->amount, $loan->interest_rate, $loan->tenor_months, $member->getSalaryDecrypted()
+            $loan->amount, $loan->interest_rate, $loan->tenor_months, $member->getSalaryDecrypted(), $loan->organization
         );
 
         if (!$score['eligible']) {
             return back()->withErrors(['error' => $score['reason']]);
+        }
+
+        // Validate Cash Balance (Akun 1-101)
+        $kasAccount = \App\Models\Account::where('organization_id', $loan->organization_id)
+            ->where('code', '1-101')
+            ->first();
+            
+        $kasBalance = $kasAccount ? $kasAccount->getBalance() : 0;
+
+        if ($kasBalance < $loan->amount) {
+            return back()->withErrors(['error' => 'Persetujuan ditolak! Saldo Kas Koperasi tidak mencukupi untuk dicairkan. (Tersedia: Rp ' . number_format($kasBalance, 0, ',', '.') . ')']);
         }
 
         $this->loanService->approveLoan($loan, Auth::id());

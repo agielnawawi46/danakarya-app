@@ -15,6 +15,7 @@
     </style>
 </head>
 <body>
+    @include('pdf-header')
     <h1>Laporan Arus Kas</h1>
     <h2>Periode: {{ \Carbon\Carbon::parse($from)->format('d M Y') }} - {{ \Carbon\Carbon::parse($to)->format('d M Y') }}</h2>
     <p>Dicetak pada: {{ now()->format('d/m/Y H:i') }}</p>

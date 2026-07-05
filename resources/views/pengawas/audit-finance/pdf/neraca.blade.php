@@ -15,13 +15,18 @@
     </style>
 </head>
 <body>
+    @include('pdf-header')
     <h1>Neraca Keuangan</h1>
+    <p>Posisi keuangan per 31 Desember {{ $year }}</p>
     <p>Dicetak pada: {{ now()->format('d/m/Y H:i') }}</p>
 
     @php
         $totalAssets = $assets->sum(fn($a) => $a->getBalance());
         $totalLiabilities = $liabilities->sum(fn($a) => $a->getBalance());
         $totalEquities = $equities->sum(fn($a) => $a->getBalance());
+        
+        $unclosedEarnings = $totalAssets - ($totalLiabilities + $totalEquities);
+        $totalEquities += $unclosedEarnings;
     @endphp
 
     <table>
@@ -59,6 +64,10 @@
             @foreach($equities as $acc)
             <tr><td>{{ $acc->code }}</td><td>{{ $acc->name }}</td><td class="text-right">Rp {{ number_format($acc->getBalance(), 0, ',', '.') }}</td></tr>
             @endforeach
+            
+            @if($unclosedEarnings != 0)
+            <tr><td>-</td><td>Laba / (Rugi) Tahun Berjalan</td><td class="text-right">Rp {{ number_format($unclosedEarnings, 0, ',', '.') }}</td></tr>
+            @endif
             <tr><td colspan="2" class="font-bold">Total Ekuitas</td><td class="text-right font-bold">Rp {{ number_format($totalEquities, 0, ',', '.') }}</td></tr>
         </tbody>
     </table>

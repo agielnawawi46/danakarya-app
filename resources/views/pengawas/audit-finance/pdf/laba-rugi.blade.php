@@ -16,6 +16,7 @@
     </style>
 </head>
 <body>
+    @include('pdf-header')
     <h1>Laporan Laba / Rugi</h1>
     <h2>Periode Tahun {{ $year }}</h2>
     <p>Dicetak pada: {{ now()->format('d/m/Y H:i') }}</p>

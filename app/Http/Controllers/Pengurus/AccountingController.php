@@ -28,12 +28,26 @@ class AccountingController extends Controller
 
     public function journals(Request $request): View
     {
-        $query = JournalEntry::with('creator', 'lines.account')->latest('date');
+        $now = now();
+        $month = $request->input('month', $now->month);
+        $year = $request->input('year', $now->year);
+
+        $currentPeriod = \Carbon\Carbon::create($year, $month, 1);
+
+        $query = JournalEntry::with('creator', 'lines.account')
+            ->whereYear('date', $currentPeriod->year)
+            ->whereMonth('date', $currentPeriod->month)
+            ->latest('date');
+
         if ($request->filled('from')) $query->whereDate('date', '>=', $request->from);
         if ($request->filled('to'))   $query->whereDate('date', '<=', $request->to);
 
-        $journals = $query->paginate(25);
-        return view('pengurus.accounting.journals', compact('journals'));
+        $journals = $query->paginate(50);
+        
+        $prevMonth = $currentPeriod->copy()->subMonth();
+        $nextMonth = $currentPeriod->copy()->addMonth();
+
+        return view('pengurus.accounting.journals', compact('journals', 'currentPeriod', 'prevMonth', 'nextMonth'));
     }
 
     public function createJournal(): View

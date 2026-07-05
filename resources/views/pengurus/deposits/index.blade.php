@@ -14,8 +14,41 @@
   </a>
 </div>
 
+{{-- Month Navigation --}}
+<div class="flex justify-between items-center" style="margin-bottom:16px;">
+  <div style="font-size:16px; font-weight:600; color:var(--gray-800);">
+    Periode: {{ $currentPeriod->translatedFormat('F Y') }}
+  </div>
+  <div class="flex gap-2">
+    <a href="{{ request()->fullUrlWithQuery(['month' => $prevMonth->month, 'year' => $prevMonth->year]) }}" class="btn btn-secondary">
+      &laquo; Bulan Sebelumnya
+    </a>
+    @if(!($currentPeriod->month == now()->month && $currentPeriod->year == now()->year))
+    <a href="{{ request()->fullUrlWithQuery(['month' => $nextMonth->month, 'year' => $nextMonth->year]) }}" class="btn btn-secondary">
+      Bulan Selanjutnya &raquo;
+    </a>
+    @endif
+  </div>
+</div>
+
 {{-- Filter --}}
-<form class="flex gap-2" style="margin-bottom:16px; align-items: stretch;">
+<form class="flex gap-2 flex-wrap" style="margin-bottom:16px; align-items: stretch;">
+
+  <select name="month" class="form-control" style="width:auto; padding:4px 32px 4px 12px; font-size:14px;" onchange="this.form.submit()">
+    @foreach([
+      1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+      5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+      9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+    ] as $m => $name)
+      <option value="{{ $m }}" {{ $currentPeriod->month == $m ? 'selected' : '' }}>{{ $name }}</option>
+    @endforeach
+  </select>
+  <select name="year" class="form-control" style="width:auto; padding:4px 32px 4px 12px; font-size:14px;" onchange="this.form.submit()">
+    @for($y = date('Y'); $y >= (Auth::user()->organization->created_at ? Auth::user()->organization->created_at->year : date('Y')); $y--)
+      <option value="{{ $y }}" {{ $currentPeriod->year == $y ? 'selected' : '' }}>{{ $y }}</option>
+    @endfor
+  </select>
+
   
   <div x-data="{
       search: '',

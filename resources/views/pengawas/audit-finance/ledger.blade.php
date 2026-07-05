@@ -17,11 +17,17 @@
   $grouped = $accounts->groupBy('type');
 @endphp
 
+<div class="grid grid-2" style="align-items:stretch;">
 @foreach($typeLabels as $type => $label)
   @if(isset($grouped[$type]) && $grouped[$type]->count())
   <div class="card" style="margin-bottom:20px;">
     <div class="card-header">
-      <h3>{{ $label }}</h3>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="stat-card-icon {{ str_replace('badge-', '', $typeColors[$type]) }}" style="width: 32px; height: 32px; border-radius: 8px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+        </div>
+        <h3 style="margin: 0;">{{ $label }}</h3>
+      </div>
       <span class="badge {{ $typeColors[$type] }}">{{ $grouped[$type]->count() }} akun</span>
     </div>
     <div class="table-wrapper" style="border:none;">
@@ -43,4 +49,5 @@
   </div>
   @endif
 @endforeach
+</div>
 @endsection

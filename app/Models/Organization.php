@@ -14,6 +14,7 @@ class Organization extends Model
         'loan_max_tenor', 'loan_max_plafon', 'loan_interest_method',
         'shu_dana_cadangan_pct', 'shu_anggota_pct', 'shu_pengurus_pct',
         'shu_karyawan_pct', 'shu_pendidikan_pct',
+        'deposit_date', 'payroll_date', 'max_loan_salary_pct',
     ];
 
     protected $casts = [
@@ -28,6 +29,9 @@ class Organization extends Model
         'shu_pengurus_pct'   => 'decimal:2',
         'shu_karyawan_pct'   => 'decimal:2',
         'shu_pendidikan_pct' => 'decimal:2',
+        'deposit_date'       => 'integer',
+        'payroll_date'       => 'integer',
+        'max_loan_salary_pct' => 'integer',
     ];
 
     public function users(): HasMany
@@ -82,6 +86,6 @@ class Organization extends Model
      */
     public function getMaxMonthlyInstallment(float $salary): float
     {
-        return $salary * 0.30;
+        return $salary * (($this->max_loan_salary_pct ?? 30) / 100);
     }
 }

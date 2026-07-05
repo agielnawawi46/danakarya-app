@@ -26,14 +26,22 @@ class AuditFinanceController extends Controller
         return view('pengawas.audit-finance.ledger', compact('accounts'));
     }
 
-    public function neraca(): View
+    public function neraca(Request $request): View
     {
-        $accounts    = Account::orderBy('code')->get();
+        $year = (int) ($request->year ?? now()->year);
+        $endDate = $year . '-12-31';
+
+        $accounts = Account::with(['journalLines' => function($q) use ($endDate) {
+            $q->whereHas('journalEntry', function($q2) use ($endDate) {
+                $q2->whereDate('date', '<=', $endDate);
+            });
+        }])->orderBy('code')->get();
+
         $assets      = $accounts->where('type', 'asset');
         $liabilities = $accounts->where('type', 'liability');
         $equities    = $accounts->where('type', 'equity');
 
-        return view('pengawas.audit-finance.neraca', compact('assets', 'liabilities', 'equities'));
+        return view('pengawas.audit-finance.neraca', compact('assets', 'liabilities', 'equities', 'year'));
     }
 
     public function labaRugi(Request $request): View
@@ -70,15 +78,23 @@ class AuditFinanceController extends Controller
         return $pdf->download('buku_besar.pdf');
     }
 
-    public function exportNeraca()
+    public function exportNeraca(Request $request)
     {
-        $accounts    = Account::orderBy('code')->get();
+        $year = (int) ($request->year ?? now()->year);
+        $endDate = $year . '-12-31';
+
+        $accounts = Account::with(['journalLines' => function($q) use ($endDate) {
+            $q->whereHas('journalEntry', function($q2) use ($endDate) {
+                $q2->whereDate('date', '<=', $endDate);
+            });
+        }])->orderBy('code')->get();
+
         $assets      = $accounts->where('type', 'asset');
         $liabilities = $accounts->where('type', 'liability');
         $equities    = $accounts->where('type', 'equity');
 
-        $pdf = Pdf::loadView('pengawas.audit-finance.pdf.neraca', compact('assets', 'liabilities', 'equities'));
-        return $pdf->download('neraca.pdf');
+        $pdf = Pdf::loadView('pengawas.audit-finance.pdf.neraca', compact('assets', 'liabilities', 'equities', 'year'));
+        return $pdf->download("neraca_{$year}.pdf");
     }
 
     public function exportLabaRugi(Request $request)
@@ -107,8 +123,13 @@ class AuditFinanceController extends Controller
 
     public function kas(Request $request): View
     {
-        $from = $request->from ?? now()->startOfMonth()->toDateString();
-        $to   = $request->to   ?? now()->toDateString();
+        $now = now();
+        $month = $request->input('month', $now->month);
+        $year = $request->input('year', $now->year);
+
+        $currentPeriod = \Carbon\Carbon::create($year, $month, 1);
+        $from = $currentPeriod->copy()->startOfMonth()->toDateString();
+        $to   = $currentPeriod->copy()->endOfMonth()->toDateString();
 
         $journals = JournalEntry::with('lines.account', 'creator')
             ->whereBetween('date', [$from, $to])
@@ -118,13 +139,21 @@ class AuditFinanceController extends Controller
         $totalDebit  = $journals->sum(fn($j) => $j->lines->sum('debit'));
         $totalCredit = $journals->sum(fn($j) => $j->lines->sum('credit'));
 
-        return view('pengawas.audit-finance.kas', compact('journals', 'from', 'to', 'totalDebit', 'totalCredit'));
+        $prevMonth = $currentPeriod->copy()->subMonth();
+        $nextMonth = $currentPeriod->copy()->addMonth();
+
+        return view('pengawas.audit-finance.kas', compact('journals', 'currentPeriod', 'prevMonth', 'nextMonth', 'totalDebit', 'totalCredit', 'from', 'to'));
     }
 
     public function exportKas(Request $request)
     {
-        $from = $request->from ?? now()->startOfMonth()->toDateString();
-        $to   = $request->to   ?? now()->toDateString();
+        $now = now();
+        $month = $request->input('month', $now->month);
+        $year = $request->input('year', $now->year);
+
+        $currentPeriod = \Carbon\Carbon::create($year, $month, 1);
+        $from = $currentPeriod->copy()->startOfMonth()->toDateString();
+        $to   = $currentPeriod->copy()->endOfMonth()->toDateString();
 
         $journals = JournalEntry::with('lines.account', 'creator')
             ->whereBetween('date', [$from, $to])
@@ -134,8 +163,8 @@ class AuditFinanceController extends Controller
         $totalDebit  = $journals->sum(fn($j) => $j->lines->sum('debit'));
         $totalCredit = $journals->sum(fn($j) => $j->lines->sum('credit'));
 
-        $pdf = Pdf::loadView('pengawas.audit-finance.pdf.kas', compact('journals', 'from', 'to', 'totalDebit', 'totalCredit'));
-        return $pdf->download("arus_kas_{$from}_{$to}.pdf");
+        $pdf = Pdf::loadView('pengawas.audit-finance.pdf.kas', compact('journals', 'from', 'to', 'totalDebit', 'totalCredit', 'currentPeriod'));
+        return $pdf->download("arus_kas_{$year}_{$month}.pdf");
     }
 
     public function simpanan(): View

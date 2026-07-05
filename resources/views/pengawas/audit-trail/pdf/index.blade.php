@@ -12,6 +12,7 @@
     </style>
 </head>
 <body>
+    @include('pdf-header')
     <h1>Log Audit Trail</h1>
     <p>Dicetak pada: {{ now()->format('d/m/Y H:i') }}</p>
 

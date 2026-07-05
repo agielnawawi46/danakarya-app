@@ -15,6 +15,7 @@
     </style>
 </head>
 <body>
+    @include('pdf-header')
     <h1>Laporan Buku Besar</h1>
     <p>Dicetak pada: {{ now()->format('d/m/Y H:i') }}</p>
 

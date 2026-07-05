@@ -40,12 +40,19 @@ class ShuService
             $totalJasaModal   = $bagianAnggota * 0.60;
             $totalJasaPinjaman= $bagianAnggota * 0.40;
 
-            // Remove existing draft for this year if any
-            ShuDistribution::withoutGlobalScopes()
+            // Check existing SHU for this year
+            $existing = ShuDistribution::withoutGlobalScopes()
                 ->where('organization_id', $org->id)
                 ->where('year', $year)
-                ->where('status', 'draft')
-                ->delete();
+                ->first();
+
+            if ($existing) {
+                if ($existing->status !== 'draft') {
+                    throw new \RuntimeException("SHU tahun {$year} sudah berstatus {$existing->status} dan tidak bisa dihitung ulang.");
+                }
+                ShuMemberDetail::withoutGlobalScopes()->where('shu_distribution_id', $existing->id)->delete();
+                $existing->delete();
+            }
 
             $distribution = ShuDistribution::create([
                 'organization_id'   => $org->id,
@@ -89,6 +96,7 @@ class ShuService
             $totalSimpanan = (float) Deposit::withoutGlobalScopes()
                 ->where('organization_id', $orgId)
                 ->where('user_id', $member->id)
+                ->whereIn('type', ['pokok', 'wajib'])
                 ->where('status', 'completed')
                 ->where('transaction_type', 'credit')
                 ->whereYear('created_at', $year)

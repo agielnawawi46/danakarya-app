@@ -14,6 +14,7 @@
     </style>
 </head>
 <body>
+    @include('pdf-header')
     <h1>Rekap Simpanan Anggota</h1>
     <p>Dicetak pada: {{ now()->format('d/m/Y H:i') }}</p>
 

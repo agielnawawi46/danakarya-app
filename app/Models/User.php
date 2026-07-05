@@ -16,7 +16,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name', 'email', 'password', 'organization_id',
         'employee_id', 'department', 'salary', 'phone',
-        'join_date', 'status',
+        'join_date', 'status', 'avatar',
     ];
 
     protected $hidden = [
@@ -178,5 +178,13 @@ class User extends Authenticatable
             'suspended' => '<span class="badge badge-danger">Ditangguhkan</span>',
             default     => $this->status,
         };
+    }
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        if ($this->avatar) {
+            return asset('storage/' . $this->avatar);
+        }
+        return null;
     }
 }

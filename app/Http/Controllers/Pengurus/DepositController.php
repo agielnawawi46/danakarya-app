@@ -21,9 +21,17 @@ class DepositController extends Controller
 
     public function index(Request $request): View
     {
+        $now = now();
+        $month = $request->input('month', $now->month);
+        $year = $request->input('year', $now->year);
+
+        $currentPeriod = \Carbon\Carbon::create($year, $month, 1);
+
         $query = Deposit::with('user')
             ->where('transaction_type', 'credit')
-            ->whereIn('type', ['sukarela', 'pokok', 'wajib']);
+            ->whereIn('type', ['sukarela', 'pokok', 'wajib'])
+            ->whereYear('created_at', $currentPeriod->year)
+            ->whereMonth('created_at', $currentPeriod->month);
 
         if ($request->filled('type'))   $query->where('type', $request->type);
         if ($request->filled('status')) $query->where('status', $request->status);
@@ -33,12 +41,15 @@ class DepositController extends Controller
 
         $deposits = $query->latest()->paginate(20);
         
+        $prevMonth = $currentPeriod->copy()->subMonth();
+        $nextMonth = $currentPeriod->copy()->addMonth();
+
         $members = User::withoutGlobalScopes()
             ->where('organization_id', Auth::user()->organization_id)
             ->whereHas('roles', fn($q) => $q->where('name', 'anggota'))
             ->get();
 
-        return view('pengurus.deposits.index', compact('deposits', 'members'));
+        return view('pengurus.deposits.index', compact('deposits', 'members', 'currentPeriod', 'prevMonth', 'nextMonth'));
     }
 
     public function create(): View
@@ -95,12 +106,24 @@ class DepositController extends Controller
 
     public function withdrawals(Request $request): View
     {
+        $now = now();
+        $month = $request->input('month', $now->month);
+        $year = $request->input('year', $now->year);
+
+        $currentPeriod = \Carbon\Carbon::create($year, $month, 1);
+
         $withdrawals = Deposit::with('user')
             ->where('transaction_type', 'debit')
             ->where('type', 'sukarela')
+            ->whereYear('created_at', $currentPeriod->year)
+            ->whereMonth('created_at', $currentPeriod->month)
             ->latest()
             ->paginate(20);
-        return view('pengurus.deposits.withdrawals', compact('withdrawals'));
+            
+        $prevMonth = $currentPeriod->copy()->subMonth();
+        $nextMonth = $currentPeriod->copy()->addMonth();
+
+        return view('pengurus.deposits.withdrawals', compact('withdrawals', 'currentPeriod', 'prevMonth', 'nextMonth'));
     }
 
     public function approve(Deposit $deposit): RedirectResponse

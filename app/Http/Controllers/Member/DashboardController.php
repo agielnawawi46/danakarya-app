@@ -43,4 +43,10 @@ class DashboardController extends Controller
             'activeLoan', 'nextInstallment', 'recentTransactions'
         ));
     }
+
+    public function rules(): View
+    {
+        $org = Auth::user()->organization;
+        return view('member.rules', compact('org'));
+    }
 }

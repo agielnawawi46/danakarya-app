@@ -49,7 +49,7 @@
       <div class="stat-card-icon green" style="width: 36px; height: 36px; border-radius: 10px;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
       </div>
-      <h3 style="margin: 0;">Tren Pendapatan 6 Bulan Terakhir</h3>
+      <h3 style="margin: 0;">Tren Pendapatan 1 Tahun Terakhir</h3>
     </div>
   </div>
   <div class="card-body">

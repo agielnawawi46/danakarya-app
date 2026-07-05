@@ -46,8 +46,13 @@ class Account extends Model
 
     public function getBalance(): float
     {
-        $debit  = $this->journalLines()->sum('debit');
-        $credit = $this->journalLines()->sum('credit');
+        if ($this->relationLoaded('journalLines')) {
+            $debit  = $this->journalLines->sum('debit');
+            $credit = $this->journalLines->sum('credit');
+        } else {
+            $debit  = $this->journalLines()->sum('debit');
+            $credit = $this->journalLines()->sum('credit');
+        }
 
         if ($this->normal_balance === 'debit') {
             return $debit - $credit;

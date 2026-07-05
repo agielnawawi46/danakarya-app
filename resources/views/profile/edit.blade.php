@@ -31,9 +31,13 @@
         </div>
         <div class="card-body" style="display: flex; flex-direction: column; flex: 1;">
             <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
-                <div style="width:64px;height:64px;background:linear-gradient(135deg,var(--brand-500),var(--accent-violet));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:white;box-shadow:0 4px 10px rgba(0,0,0,0.1);">
-                    {{ strtoupper(substr($user->name, 0, 2)) }}
-                </div>
+                @if($user->avatar_url)
+                    <img src="{{ $user->avatar_url }}" style="width:64px;height:64px;border-radius:50%;object-fit:cover;box-shadow:0 4px 10px rgba(0,0,0,0.1);" alt="Avatar">
+                @else
+                    <div style="width:64px;height:64px;background:linear-gradient(135deg,var(--brand-500),var(--accent-violet));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:white;box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+                        {{ strtoupper(substr($user->name, 0, 2)) }}
+                    </div>
+                @endif
                 <div>
                     <div style="font-size:18px;font-weight:700;color:var(--gray-900);">{{ $user->name }}</div>
                     <div style="font-size:13px;color:var(--gray-500);margin-bottom:6px;">{{ $user->email }}</div>
@@ -96,10 +100,18 @@
                     </div>
                 </div>
                 <div class="card-body" style="flex: 1;">
-                    <form method="POST" action="{{ route('profile.update') }}" style="height: 100%; display: flex; flex-direction: column;">
+                    <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" style="height: 100%; display: flex; flex-direction: column;">
                         @csrf
                         @method('PUT')
                         
+                        <div class="form-group mb-3">
+                            <label class="form-label">Foto Profil (Avatar)</label>
+                            <input type="file" name="avatar" class="form-control @error('avatar') is-invalid @enderror" accept="image/*">
+                            @error('avatar')
+                                <div class="form-error">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <div class="form-group mb-3">
                             <label class="form-label">Nama <span class="req">*</span></label>
                             <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $user->name) }}" required>

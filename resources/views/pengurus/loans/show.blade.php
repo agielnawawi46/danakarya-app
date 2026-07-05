@@ -41,12 +41,9 @@
       $eligible = $creditInfo['eligible'];
       $score = $creditInfo['score'];
       
-      if ($score >= 70) {
+      if ($eligible) {
           $scoreColor = '#10b981'; // Green
           $scoreBg = '#ecfdf5';
-      } elseif ($score >= 40) {
-          $scoreColor = '#f59e0b'; // Yellow
-          $scoreBg = '#fffbeb';
       } else {
           $scoreColor = '#ef4444'; // Red
           $scoreBg = '#fef2f2';
@@ -155,7 +152,7 @@
       <div class="card-body" style="flex:1;">
         @foreach([
           ['Jumlah Pinjaman','Rp '.number_format($loan->amount,0,',','.')],
-          ['Bunga','$loan->interest_rate % / bulan ('.ucfirst($loan->interest_method).')'],
+          ['Bunga', $loan->interest_rate . ' % / bulan (' . ucfirst($loan->interest_method) . ')'],
           ['Tenor',$loan->tenor_months.' bulan'],
           ['Angsuran/Bulan','Rp '.number_format($creditInfo['monthly_installment'] ?? $loan->getMonthlyInstallmentFlat(),0,',','.')],
           ['Tujuan',$loan->purpose],

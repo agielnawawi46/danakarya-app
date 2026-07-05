@@ -4,9 +4,20 @@
 
 @section('content')
 <div class="page-header">
-  <h1 class="page-title">Neraca Keuangan</h1>
+  <div class="page-header-text">
+    <h1 class="page-title">Neraca Keuangan</h1>
+    <p class="page-subtitle">Posisi keuangan per 31 Desember {{ $year }}</p>
+  </div>
   <div class="flex gap-2">
-    <a href="{{ route('pengawas.audit-finance.neraca.export') }}" class="btn btn-primary">Export PDF</a>
+    <form class="flex gap-2">
+      <select name="year" class="form-control" style="max-width:100px;">
+        @for($y = now()->year; $y >= (Auth::user()->organization->created_at ? Auth::user()->organization->created_at->year : date('Y')); $y--)
+          <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}</option>
+        @endfor
+      </select>
+      <button class="btn btn-secondary">Tampilkan</button>
+    </form>
+    <a href="{{ route('pengawas.audit-finance.neraca.export', ['year' => $year]) }}" class="btn btn-primary">Export PDF</a>
     <a href="{{ route('pengawas.audit-finance.index') }}" class="btn btn-secondary">← Kembali</a>
   </div>
 </div>
@@ -14,6 +25,9 @@
   $totalAssets      = $assets->sum(fn($a) => $a->getBalance());
   $totalLiabilities = $liabilities->sum(fn($a) => $a->getBalance());
   $totalEquities    = $equities->sum(fn($a) => $a->getBalance());
+
+  $unclosedEarnings = $totalAssets - ($totalLiabilities + $totalEquities);
+  $totalEquities += $unclosedEarnings;
 @endphp
 <div class="grid grid-2">
   <div style="display:flex;flex-direction:column;gap:20px;height:100%;">
@@ -95,8 +109,20 @@
               <td class="money font-bold">Rp {{ number_format($acc->getBalance(), 0, ',', '.') }}</td>
             </tr>
             @empty
-            <tr><td colspan="3" class="text-muted text-center" style="padding:16px;">Tidak ada</td></tr>
             @endforelse
+
+            {{-- Injeksi Laba/Rugi Berjalan --}}
+            @if($unclosedEarnings != 0)
+            <tr>
+              <td style="font-family:monospace;font-size:12px;color:var(--success);">-</td>
+              <td>Laba / (Rugi) Tahun Berjalan</td>
+              <td class="money font-bold">Rp {{ number_format($unclosedEarnings, 0, ',', '.') }}</td>
+            </tr>
+            @endif
+            
+            @if($equities->isEmpty() && $unclosedEarnings == 0)
+            <tr><td colspan="3" class="text-muted text-center" style="padding:16px;">Tidak ada</td></tr>
+            @endif
           </tbody>
         </table>
       </div>

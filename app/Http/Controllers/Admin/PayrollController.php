@@ -22,13 +22,14 @@ class PayrollController extends Controller
 
         $billing = $this->payrollService->generateBillingData($org, $month, $year);
 
+        $totalSimpananPokok = array_sum(array_column($billing, 'simpanan_pokok'));
         $totalSimpananWajib = array_sum(array_column($billing, 'simpanan_wajib'));
         $totalAngsuran      = array_sum(array_column($billing, 'angsuran'));
         $totalPotongan      = array_sum(array_column($billing, 'total'));
 
         return view('admin.payroll.index', compact(
             'org', 'billing', 'month', 'year',
-            'totalSimpananWajib', 'totalAngsuran', 'totalPotongan'
+            'totalSimpananPokok', 'totalSimpananWajib', 'totalAngsuran', 'totalPotongan'
         ));
     }
 
@@ -37,15 +38,27 @@ class PayrollController extends Controller
         $org   = Auth::user()->organization;
         $month = (int) ($request->month ?? now()->month);
         $year  = (int) ($request->year  ?? now()->year);
+        $format = $request->query('format', 'csv');
 
         $billing = $this->payrollService->generateBillingData($org, $month, $year);
-        $csv     = $this->payrollService->generateCsvExport($billing, $month, $year);
-
+        
         $monthNames = [
             1=>'Januari',2=>'Februari',3=>'Maret',4=>'April',
             5=>'Mei',6=>'Juni',7=>'Juli',8=>'Agustus',
             9=>'September',10=>'Oktober',11=>'November',12=>'Desember',
         ];
+
+        if ($format === 'pdf') {
+            $totalSimpananPokok = array_sum(array_column($billing, 'simpanan_pokok'));
+            $totalSimpananWajib = array_sum(array_column($billing, 'simpanan_wajib'));
+            $totalAngsuran      = array_sum(array_column($billing, 'angsuran'));
+            $totalPotongan      = array_sum(array_column($billing, 'total'));
+
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.payroll.pdf', compact('org', 'billing', 'month', 'year', 'monthNames', 'totalSimpananPokok', 'totalSimpananWajib', 'totalAngsuran', 'totalPotongan'));
+            return $pdf->download("billing-payroll-{$monthNames[$month]}-{$year}.pdf");
+        }
+
+        $csv     = $this->payrollService->generateCsvExport($billing, $month, $year);
 
         return response($csv, 200, [
             'Content-Type'        => 'text/csv',
@@ -58,6 +71,11 @@ class PayrollController extends Controller
         $request->validate(['file' => ['required', 'file', 'mimes:csv,txt']]);
 
         $org   = Auth::user()->organization;
+
+        if (now()->day !== (int) $org->payroll_date) {
+            return back()->with('error', "Import payroll bulan ini hanya bisa dilakukan pada tanggal {$org->payroll_date}.");
+        }
+
         $month = (int) ($request->month ?? now()->month);
         $year  = (int) ($request->year  ?? now()->year);
         $file  = $request->file('file');

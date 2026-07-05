@@ -12,12 +12,18 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Apply security headers to all web responses
+        $middleware->web(append: [
+            \App\Http\Middleware\SecurityHeaders::class,
+        ]);
+
         // Register Spatie permission middleware
         $middleware->alias([
             'role'          => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission'    => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'set.team'      => \App\Http\Middleware\SetTeamPermission::class,
             'org.configured'=> \App\Http\Middleware\EnsureOrganizationConfigured::class,
+            'security.headers' => \App\Http\Middleware\SecurityHeaders::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

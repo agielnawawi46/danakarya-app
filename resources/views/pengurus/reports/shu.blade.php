@@ -11,7 +11,7 @@
   <div class="flex gap-2">
     <form class="flex gap-2">
       <select name="year" class="form-control" style="max-width:100px;">
-        @for($y = now()->year; $y >= 2020; $y--)
+        @for($y = now()->year; $y >= (Auth::user()->organization->created_at ? Auth::user()->organization->created_at->year : date('Y')); $y--)
           <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}</option>
         @endfor
       </select>
