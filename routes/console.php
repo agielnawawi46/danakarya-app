@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Schedule;
 // Generate monthly savings billing every day at 00:01 (logic filters by deposit_date inside command)
 Schedule::command(GenerateMonthlyBilling::class)->dailyAt('00:01');
 
+// Clean up unconfigured organizations older than 24 hours
+Schedule::command(\App\Console\Commands\CleanupUnconfiguredOrganizations::class)->hourly();
+
 // ─── Backup Scheduling ───────────────────────────────────────────────────────
 // Run database backup every day at 02:00
 Schedule::command('backup:run --only-db')->dailyAt('02:00')->onFailure(function () {

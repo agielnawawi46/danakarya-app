@@ -26,7 +26,12 @@ class ShuService
             $totalProfit = $totalIncome - $totalExpense;
 
             if ($totalProfit <= 0) {
-                throw new \RuntimeException('Tidak ada SHU untuk dibagikan: total keuntungan ≤ 0.');
+                $netFormatted = number_format($totalProfit, 0, ',', '.');
+                throw new \RuntimeException(
+                    "SHU tidak dapat dihitung: koperasi tidak menghasilkan keuntungan pada tahun {$year}. "
+                    . "Laba bersih saat ini: Rp {$netFormatted}. "
+                    . "Pastikan total pendapatan melebihi total beban sebelum menghitung SHU."
+                );
             }
 
             // Allocate based on percentages from org settings

@@ -38,7 +38,7 @@
         <div class="alert alert-danger">{{ $errors->first() }}</div>
       @endif
       
-      <div style="display:flex;gap:24px;margin-bottom:32px;">
+      <div style="display:flex;gap:24px;margin-bottom:24px;">
         <div style="flex:1;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:16px;padding:32px;text-align:center;box-shadow:inset 0 2px 4px rgba(0,0,0,0.02);">
           <div style="font-size:15px;color:var(--gray-500);font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:12px;">Total Pendapatan</div>
           <div class="money" style="font-size:2.5rem;font-weight:900;color:var(--success);">Rp {{ number_format($totalIncome, 0, ',', '.') }}</div>
@@ -49,12 +49,24 @@
           <div class="money" style="font-size:2.5rem;font-weight:900;color:var(--danger);">Rp {{ number_format($totalExpense, 0, ',', '.') }}</div>
           <input type="hidden" name="total_expense" value="{{ $totalExpense }}">
         </div>
+        @php $netProfit = $totalIncome - $totalExpense; @endphp
+        <div style="flex:1;background:{{ $netProfit > 0 ? '#f0fdf4' : '#fef2f2' }};border:1px solid {{ $netProfit > 0 ? '#bbf7d0' : '#fecaca' }};border-radius:16px;padding:32px;text-align:center;box-shadow:inset 0 2px 4px rgba(0,0,0,0.02);">
+          <div style="font-size:15px;color:var(--gray-500);font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:12px;">Laba Bersih (SHU)</div>
+          <div class="money" style="font-size:2.5rem;font-weight:900;color:{{ $netProfit > 0 ? 'var(--success)' : 'var(--danger)' }};">Rp {{ number_format($netProfit, 0, ',', '.') }}</div>
+        </div>
       </div>
 
+      @if($netProfit <= 0)
+        <div class="alert alert-warning" style="margin-bottom:24px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <div><strong>Kalkulasi SHU tidak tersedia:</strong> Laba bersih koperasi tahun {{ $year }} adalah <strong>Rp {{ number_format($netProfit, 0, ',', '.') }}</strong>. SHU hanya dapat dihitung apabila koperasi menghasilkan keuntungan (laba bersih &gt; 0).</div>
+        </div>
+      @endif
+
       <div style="text-align:center;">
-        <button type="submit" class="btn btn-primary" style="padding:14px 40px;font-size:16px;border-radius:12px;box-shadow:0 4px 12px rgba(99,102,241,0.3);">
+        <button type="submit" class="btn btn-primary" style="padding:14px 40px;font-size:16px;border-radius:12px;box-shadow:0 4px 12px rgba(99,102,241,0.3);" {{ $netProfit <= 0 ? 'disabled' : '' }}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-          Hitung & Proses SHU Tahun {{ $year }}
+          Hitung &amp; Proses SHU Tahun {{ $year }}
         </button>
       </div>
     </form>
@@ -73,11 +85,23 @@
       </div>
     <div class="flex gap-2 items-center">
       @if($dist->status === 'draft')
-        <span class="badge badge-warning">Draft</span>
+        <span class="badge badge-warning">Draft — Belum Didistribusikan</span>
         <form method="POST" action="{{ route('pengurus.reports.shu.distribute', $dist) }}">
           @csrf
           <button class="btn btn-success btn-sm" data-confirm="Distribusikan SHU tahun {{ $dist->year }} ke semua anggota? Tindakan ini tidak dapat dibatalkan.">
             🌟 Distribusikan ke Anggota
+          </button>
+        </form>
+        {{-- NOTE-002 fix: allow recalculating a draft SHU --}}
+        <form method="POST" action="{{ route('pengurus.reports.shu.calculate') }}" style="display:inline;">
+          @csrf
+          <input type="hidden" name="year" value="{{ $dist->year }}">
+          <input type="hidden" name="total_income" value="{{ $totalIncome }}">
+          <input type="hidden" name="total_expense" value="{{ $totalExpense }}">
+          <button type="submit" class="btn btn-secondary btn-sm"
+            data-confirm="Hitung ulang SHU tahun {{ $dist->year }}? Data draft saat ini akan diganti."
+            title="Hitung ulang — hanya tersedia selama status masih Draft">
+            🔄 Hitung Ulang
           </button>
         </form>
       @elseif($dist->status === 'distributed')

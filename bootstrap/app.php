@@ -23,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission'    => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'set.team'      => \App\Http\Middleware\SetTeamPermission::class,
             'org.configured'=> \App\Http\Middleware\EnsureOrganizationConfigured::class,
+            'org.active'    => \App\Http\Middleware\EnsureOrganizationIsActive::class,
             'security.headers' => \App\Http\Middleware\SecurityHeaders::class,
         ]);
     })

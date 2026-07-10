@@ -34,9 +34,19 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
-    Route::put('/profile/password', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::middleware('org.active')->group(function () {
+        Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+        Route::put('/profile/password', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.password');
+    });
+
+    Route::get('/suspended', function () {
+        $user = auth()->user();
+        if (!$user->organization_id || $user->organization->is_active) {
+            return redirect($user->getDashboardRoute());
+        }
+        return view('errors.suspended');
+    })->name('organization.suspended');
 });
 
 
@@ -52,7 +62,7 @@ Route::prefix('superadmin')
 
 // ─── ADMIN Routes ────────────────────────────────────────────────────────────
 Route::prefix('admin')
-    ->middleware(['auth', 'set.team', 'role:admin', 'org.configured'])
+    ->middleware(['auth', 'set.team', 'role:admin', 'org.active', 'org.configured'])
     ->name('admin.')
     ->group(function () {
         Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
@@ -92,7 +102,7 @@ Route::prefix('admin')
 
 // ─── PENGURUS Routes ─────────────────────────────────────────────────────────
 Route::prefix('pengurus')
-    ->middleware(['auth', 'set.team', 'role:pengurus'])
+    ->middleware(['auth', 'set.team', 'role:pengurus', 'org.active'])
     ->name('pengurus.')
     ->group(function () {
         Route::get('/dashboard', [PengurusDashboard::class, 'index'])->name('dashboard');
@@ -140,7 +150,7 @@ Route::prefix('pengurus')
 
 // ─── PENGAWAS Routes ─────────────────────────────────────────────────────────
 Route::prefix('pengawas')
-    ->middleware(['auth', 'set.team', 'role:pengawas'])
+    ->middleware(['auth', 'set.team', 'role:pengawas', 'org.active'])
     ->name('pengawas.')
     ->group(function () {
         Route::get('/dashboard',          [PengawasDashboard::class, 'index'])->name('dashboard');
@@ -163,7 +173,7 @@ Route::prefix('pengawas')
 
 // ─── MEMBER (ANGGOTA) Routes ─────────────────────────────────────────────────
 Route::prefix('member')
-    ->middleware(['auth', 'set.team', 'role:anggota'])
+    ->middleware(['auth', 'set.team', 'role:anggota', 'org.active'])
     ->name('member.')
     ->group(function () {
         Route::get('/dashboard', [MemberDashboard::class, 'index'])->name('dashboard');

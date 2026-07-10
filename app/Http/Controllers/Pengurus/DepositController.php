@@ -66,6 +66,10 @@ class DepositController extends Controller
         $validated = $request->validate([
             'user_id' => ['required', 'exists:users,id'],
             'type'    => ['required', 'in:sukarela,pokok,wajib'],
+            // NOTE: Loket pengurus menerima nominal mulai Rp 1.000 karena kasir
+            // menangani setoran langsung termasuk simpanan pokok nominal kecil.
+            // Batas minimum penarikan mandiri anggota (Rp 10.000) diatur di
+            // Member\DepositController dan berbeda secara sengaja.
             'amount'  => ['required', 'numeric', 'min:1000'],
             'notes'   => ['nullable', 'string'],
         ]);

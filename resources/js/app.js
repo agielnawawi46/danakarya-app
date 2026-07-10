@@ -126,12 +126,18 @@ document.addEventListener('DOMContentLoaded', () => {
 // ─── Mobile Sidebar Toggle ───────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
     const toggle = document.getElementById('sidebar-toggle');
+    const closeBtn = document.getElementById('sidebar-close');
     const sidebar = document.querySelector('.sidebar');
+    
     if (toggle && sidebar) {
         toggle.addEventListener('click', () => {
-            sidebar.style.transform = sidebar.style.transform === 'translateX(0px)'
-                ? 'translateX(-100%)'
-                : 'translateX(0px)';
+            sidebar.style.transform = 'translateX(0px)';
+        });
+    }
+    
+    if (closeBtn && sidebar) {
+        closeBtn.addEventListener('click', () => {
+            sidebar.style.transform = 'translateX(-100%)';
         });
     }
 });

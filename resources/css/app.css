@@ -292,6 +292,14 @@ h4 {
   box-shadow: var(--shadow-sm);
 }
 
+#sidebar-toggle {
+  display: none;
+}
+
+#sidebar-close {
+  display: none;
+}
+
 .topbar-title {
   font-size: 1rem;
   font-weight: 700;
@@ -1084,6 +1092,21 @@ tr.table-total td.money {
 
   .main-content {
     margin-left: 0;
+  }
+  
+  #sidebar-toggle {
+    display: inline-flex;
+    padding: 8px;
+  }
+  
+  #sidebar-close {
+    display: inline-flex;
+    background: transparent;
+    border: none;
+    color: var(--gray-400);
+    cursor: pointer;
+    margin-left: auto;
+    padding: 4px;
   }
 }
 

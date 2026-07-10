@@ -20,8 +20,13 @@ class AuthController extends Controller
         private readonly AccountingService $accountingService,
     ) {}
 
-    public function showLogin(): View
+    public function showLogin(): View|RedirectResponse
     {
+        // If already authenticated, redirect to role-based dashboard (fix BUG-001)
+        if (Auth::check()) {
+            return redirect(Auth::user()->getDashboardRoute());
+        }
+
         return view('auth.login');
     }
 
