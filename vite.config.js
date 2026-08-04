@@ -15,6 +15,13 @@ export default defineConfig({
             ],
         }),
         tailwindcss(),
+        {
+            name: 'force-exit-after-build',
+            apply: 'build',
+            closeBundle() {
+                process.exit(0);
+            },
+        },
     ],
     server: {
         watch: {
